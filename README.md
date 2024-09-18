@@ -1,5 +1,5 @@
 # Underwater Welding Robot System
-![Uploading UnderwaterWelding RobotDemo.png…]()
+![Uploading UnderwaterWelding RobotDemo.png…](UnderwaterWelding RobotDemo.png)
 
 ## Project Overview
 
