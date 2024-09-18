@@ -1,6 +1,6 @@
 # Underwater Welding Robot System
 
-![Underwater Welding Robot Demo](https://raw.githubusercontent.com/something8701/Subsea-Welding-Robots-Assignment-2/main/UnderwaterWelding%20RobotDemo.png)
+![Underwater Welding Robot Demo]([https://raw.githubusercontent.com/something8701/Subsea-Welding-Robots-Assignment-2/main/UnderwaterWelding%20RobotDemo.png](https://github.com/something8701/Subsea-Welding-Robots-Assignment-2/blob/main/UnderwaterWelding%20RobotDemo.png))
 
 ## Project Overview
 
