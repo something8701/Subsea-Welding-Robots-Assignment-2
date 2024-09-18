@@ -288,8 +288,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions or suggestions regarding this project, please contact:
 
-- **Name:** Your Name
-- **Email:** your.email@example.com
-- **GitHub:** [yourusername](https://github.com/yourusername)
+- **Name:** Ali Coruk
+- **GitHub:** [something8701](https://github.com/something8701)
 
 ---
