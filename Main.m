@@ -7,27 +7,29 @@ clc;
 % Add the folder containing your classes to the MATLAB path
 addpath(genpath(pwd));
 
-% Create an instance of the Omron TM5 robot
-omron = OmronTM5();
+%% Initialize the Feeder Robot (Omron TM5)
+feederRobot = OmronTM5();
 
-% Plot the Omron TM5 robot in the default zero position
+% Visualize the Feeder Robot
 figure(1);
-omron.plotRobot();
-view(3); % Set 3D view
-grid on;
+feederRobot.plotRobot();
 
-% Create an instance of the Underwater Welding robot
-welder = UnderwaterWelder();
+%% Initialize the Welding Robot (Underwater Welder)
+weldingRobot = UnderwaterWelder();
 
-% Plot the Underwater Welder robot in the default zero position
+% Visualize the Welding Robot
 figure(2);
-welder.plotRobot();
-view(3); % Set 3D view
-grid on;
+weldingRobot.plotRobot();
 
-% Move the Underwater Welder to a specified point
-target_point = [0.5, 0.2, 0.3]; % Define the target point in 3D space
-figure(3);
-welder.moveToPoint(target_point);
-view(3); % Set 3D view
-grid on;
+%% Create an Instance of the Movement Class
+movementController = Movement(feederRobot, weldingRobot);
+
+%% Define the Welding Path as a Series of Points
+weldingPoints = [
+    0.5, 0.2, 0.3;
+    0.55, 0.25, 0.35;
+    0.6, 0.3, 0.4;
+];
+
+%% Synchronize the Robots Along the Welding Path
+movementController.synchronizeRobots(weldingPoints);

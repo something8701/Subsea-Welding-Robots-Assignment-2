@@ -27,5 +27,14 @@ classdef OmronTM5 < handle
             self.robot.plot(q, 'workspace', [-1 1 -1 1 0 1.5]);
             title('Omron TM5 Robot');
         end
+
+        function moveToPoint(self, point)
+            % Move the robot's end-effector to a specified 3D point
+            q0 = zeros(1,6); % Initial joint configuration
+            T = transl(point); % Desired end-effector position
+            q_sol = self.robot.ikcon(T, q0); % Compute inverse kinematics
+            self.robot.plot(q_sol, 'workspace', [-1 1 -1 1 0 1.5]);
+            title('Omron TM5 Moving to Point');
+        end
     end
 end
