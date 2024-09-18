@@ -1,4 +1,4 @@
-% main.m
+
 
 % Clear workspace and command window
 clear all;
