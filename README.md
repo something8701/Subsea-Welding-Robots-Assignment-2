@@ -2,6 +2,8 @@
 
 ![Underwater Welding Robot Demo]([https://raw.githubusercontent.com/something8701/Subsea-Welding-Robots-Assignment-2/main/UnderwaterWelding%20RobotDemo.png](https://github.com/something8701/Subsea-Welding-Robots-Assignment-2/blob/main/UnderwaterWelding%20RobotDemo.png))
 
+https://github.com/something8701/Subsea-Welding-Robots-Assignment-2/blob/main/UnderwaterWelding%20RobotDemo.png?raw=true
+
 ## Project Overview
 
 This project focuses on developing an innovative underwater welding robot system designed for marine applications such as repairing ships, offshore platforms, and underwater pipelines. The system features two synchronized robotic arms:
