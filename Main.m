@@ -20,22 +20,25 @@ env.plotEnvironment(hAxes);
 %% Initialize the Feeder Robot (Omron TM5)
 feederRobot = OmronTM5();
 
-%% Initialize the Welding Robot (Underwater Welder)
-weldingRobot = UnderwaterWelder();
+%% Initialize the AMS Feeder Robot
+amsFeederRobot = AMSFeeder();
 
-%% Visualize the Robots in the Same Axes
+%% Visualize the Robots
 feederRobot.plotRobot([], hAxes);
-weldingRobot.plotRobot([], hAxes);
+amsFeederRobot.plotRobot([], hAxes);
 
 %% Create an Instance of the Movement Class
-movementController = Movement(feederRobot, weldingRobot, hAxes);
+movementController = Movement(feederRobot, amsFeederRobot, hAxes);
 
-%% Define the Welding Path as a Series of Points
-weldingPoints = [
-    0.5, 0.2, 0.3;
-    0.55, 0.25, 0.35;
-    0.6, 0.3, 0.4;
-];
+%% Define a Straight Line Path (start and end point)
+startPoint = [0.5, 0.2, 0.3]; % Starting position
+endPoint = [0.7, 0.2, 0.3]; % End position
 
-%% Synchronize the Robots Along the Welding Path
+%% Linear Interpolation to Generate Points Along the Straight Line
+nPoints = 20; % Number of points for path discretization
+weldingPoints = [linspace(startPoint(1), endPoint(1), nPoints)', ...
+                 linspace(startPoint(2), endPoint(2), nPoints)', ...
+                 linspace(startPoint(3), endPoint(3), nPoints)'];
+
+%% Synchronize the Robots Along the Welding Path with Smooth Motion
 movementController.synchronizeRobots(weldingPoints);

@@ -20,26 +20,21 @@ classdef OmronTM5 < handle
         end
 
         function plotRobot(self, q, hAxes)
-            % Plot the robot at configuration q in the specified axes
+            % Plot the robot at configuration q
             if nargin < 2 || isempty(q)
                 q = zeros(1,6); % Default to zero position
             end
-            if nargin < 3
-                hAxes = gca; % Use current axes
-            end
-            self.robot.plot(q, 'workspace', [-5 5 -5 5 0 5], 'parent', hAxes, 'nojoints', 'noname', 'noshadow', 'nowrist');
+            % Plot the robot in the current figure and axes
+            self.robot.plot(q, 'workspace', [-5 5 -5 5 0 5], 'nojoints', 'noname', 'noshadow', 'nowrist');
             title(hAxes, 'Omron TM5 Robot');
         end
 
         function moveToPoint(self, point, hAxes)
             % Move the robot's end-effector to a specified 3D point
-            if nargin < 3
-                hAxes = gca; % Use current axes
-            end
             q0 = zeros(1,6); % Initial joint configuration
             T = transl(point); % Desired end-effector position
             q_sol = self.robot.ikcon(T, q0); % Compute inverse kinematics
-            self.robot.plot(q_sol, 'workspace', [-5 5 -5 5 0 5], 'parent', hAxes, 'nojoints', 'noname', 'noshadow', 'nowrist');
+            self.robot.plot(q_sol, 'workspace', [-5 5 -5 5 0 5], 'nojoints', 'noname', 'noshadow', 'nowrist');
             title(hAxes, 'Omron TM5 Moving to Point');
         end
     end
