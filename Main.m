@@ -1,5 +1,3 @@
-% main.m
-
 % Clear workspace and command window
 clear all;
 clc;
@@ -13,12 +11,13 @@ clf;
 hAxes = axes('Parent', gcf);
 hold(hAxes, 'on');
 
-%% Plot the Environment
+%% Plot the Environment (give it priority)
 env = Environment(10, 10); % Adjust NX and NY as needed
 env.plotEnvironment(hAxes);
+uistack(hAxes, 'bottom'); % Ensure the environment is at the bottom layer
 
 %% Initialize the Feeder Robot (Omron TM5)
-feederRobot = OmronTM5();
+feederRobot = OmronTM5(); % Ensure the OmronTM5 class is loaded
 
 %% Initialize the AMS Feeder Robot
 amsFeederRobot = AMSFeeder();
