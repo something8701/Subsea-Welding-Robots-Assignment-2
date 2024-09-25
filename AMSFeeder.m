@@ -18,14 +18,14 @@ classdef AMSFeeder < handle
             self.robot = SerialLink([L1 L2 L3 L4 L5 L6], 'name', 'AMS Feeder');
         end
 
-        function plotRobot(self, q, hAxes)
+        function plotRobot(self, q)
             % Plot the robot at configuration q
             if nargin < 2 || isempty(q)
                 q = zeros(1,6); % Default to zero position
             end
             % Plot the robot in the current figure and axes
             self.robot.plot(q, 'workspace', [-5 5 -5 5 0 5], 'nojoints', 'noname', 'noshadow', 'nowrist');
-            title(hAxes, 'AMS Feeder Robot');
+            %title(hAxes, 'AMS Feeder Robot');
         end
 
         function moveToPoint(self, point, hAxes)
@@ -35,6 +35,8 @@ classdef AMSFeeder < handle
             q_sol = self.robot.ikcon(T, q0); % Compute inverse kinematics
             self.robot.plot(q_sol, 'workspace', [-5 5 -5 5 0 5], 'nojoints', 'noname', 'noshadow', 'nowrist');
             title(hAxes, 'AMS Feeder Robot Moving to Point');
+
+            
         end
     end
 end

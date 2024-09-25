@@ -1,43 +1,51 @@
 % Clear workspace and command window
 clear all;
 clc;
+% Close all figures
+close all;
 
-% Add the folder containing your classes to the MATLAB path
-addpath(genpath(pwd));
+%% Initialize Environment
+env = Environment();
 
-%% Create a Figure and Axes
-figure(1);
-clf;
-hAxes = axes('Parent', gcf);
-hold(hAxes, 'on');
+% Get the figure and axes handles
+hFig = gcf;
+hAxes = gca;
+hold(hAxes, 'on'); % Hold on to plot multiple items in the same axes
 
-%% Plot the Environment (give it priority)
-env = Environment(10, 10); % Adjust NX and NY as needed
-env.plotEnvironment(hAxes);
-uistack(hAxes, 'bottom'); % Ensure the environment is at the bottom layer
+%% Initialize and Plot Robots
+% Initialize the OmronTM5
+feederRobot = OmronTM5();
+% Plot feederRobot
+feederRobot.plotRobot();
 
-%% Initialize the Feeder Robot (Omron TM5)
-feederRobot = OmronTM5(); % Ensure the OmronTM5 class is loaded
-
-%% Initialize the AMS Feeder Robot
+% Initialize the AMS Feeder Robot
 amsFeederRobot = AMSFeeder();
+% Plot amsFeederRobot
+amsFeederRobot.plotRobot();
 
-%% Visualize the Robots
-feederRobot.plotRobot([], hAxes);
-amsFeederRobot.plotRobot([], hAxes);
+%% Adjust Axes Properties
+% Set axes background color to white
+set(hAxes, 'Color', [1 1 1]);
+% Set grid properties
+set(hAxes, 'GridColor', [0 0 0]); % Grid lines in black
+grid(hAxes, 'on');                % Turn on grid
+% Adjust axes limits and aspect ratio
+axis(hAxes, 'equal');
+xlim(hAxes, [-5, 5]);
+ylim(hAxes, [-5, 5]);
+zlim(hAxes, [0, 5]);
 
-%% Create an Instance of the Movement Class
-movementController = Movement(feederRobot, amsFeederRobot, hAxes);
+%% Add Lighting and Material Effects
+% Add a light source
+camlight('headlight');
+% Set material properties
+material(hAxes, 'dull');
 
-%% Define a Straight Line Path (start and end point)
-startPoint = [0.5, 0.2, 0.3]; % Starting position
-endPoint = [0.7, 0.2, 0.3]; % End position
+%% Set View and Renderer
+% Set 3D view
+view(hAxes, 3);
+% Set renderer to OpenGL for better lighting effects
+set(hFig, 'Renderer', 'opengl');
 
-%% Linear Interpolation to Generate Points Along the Straight Line
-nPoints = 20; % Number of points for path discretization
-weldingPoints = [linspace(startPoint(1), endPoint(1), nPoints)', ...
-                 linspace(startPoint(2), endPoint(2), nPoints)', ...
-                 linspace(startPoint(3), endPoint(3), nPoints)'];
-
-%% Synchronize the Robots Along the Welding Path with Smooth Motion
-movementController.synchronizeRobots(weldingPoints);
+%% Optionally, Re-Plot the Environment
+env.plotEnvironment(hAxes);

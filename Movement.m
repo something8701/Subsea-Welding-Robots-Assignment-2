@@ -1,5 +1,3 @@
-% Movement.m
-
 classdef Movement < handle
     properties
         feederRobot   % Instance of the feeder robot (Omron TM5)
