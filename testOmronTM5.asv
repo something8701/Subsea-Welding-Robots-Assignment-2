@@ -1,0 +1,46 @@
+classdef testOmronTM5 < handle
+%#ok<*NASGU>
+%#ok<*NOPRT>
+%#ok<*TRYNC>
+
+    methods 
+		function self = testOmronTM5()
+			clf
+			clc
+			input('Press enter to begin')
+            self.Initialise();
+            self.Test1(); 
+            self.Test2();
+		end
+	end
+    
+    methods(Static)
+        %% Initialise
+            function Initialise()
+                %% Initialize and Plot Robots
+                    % Initialize the OmronTM5
+                        feederRobot = OmronTM5();
+                    % Plot feederRobot
+                        feederRobot.plotRobot();
+            end
+        %% Test Omron Teach
+            function Test1()
+                
+            end
+        %% Test Omron Bounds / Limits
+            function Test2()
+                
+            end
+        %% Test Omron Movement
+            p1 = [0 -0.5 0.5];
+            p2 = [0 -0.5 1];
+            p3 = [0 0 1];
+            p4 = [0 0 0.5];
+            p5 = [0 -0.5 0.5];
+            feederRobot.moveToPoint(p1);
+            feederRobot.moveToPoint(p2);
+            feederRobot.moveToPoint(p3);
+            feederRobot.moveToPoint(p4);
+            feederRobot.moveToPoint(p5);
+    end
+end

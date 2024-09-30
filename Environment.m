@@ -40,7 +40,7 @@ classdef Environment < handle
             x = linspace(-self.NX/2, self.NX/2, 2);
             y = linspace(-self.NY/2, self.NY/2, 2);
             [X, Y] = meshgrid(x, y);
-            Z = zeros(size(X)); % Floor at Z = 0
+            Z = zeros(size(X));   % Floor at Z = 0
             
             % Plot the surface for the floor with texture mapping
             surface('XData', X, 'YData', Y, 'ZData', Z, ...

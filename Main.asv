@@ -17,6 +17,7 @@ hold(hAxes, 'on'); % Hold on to plot multiple items in the same axes
 feederRobot = OmronTM5();
 % Plot feederRobot
 feederRobot.plotRobot();
+feederRobot.model.animate([0 0 0 0 0 0 0]);
 
 % Initialize the AMS Feeder Robot
 amsFeederRobot = AMSFeeder();
@@ -51,15 +52,5 @@ set(hFig, 'Renderer', 'opengl');
 env.plotEnvironment(hAxes);
 
 %% Veari - TEST OMRON MOVEMENT AS IF WELDING IN SQUARE MOTION
-    p1 = [0 -0.5 0.5];
-    p2 = [0 -0.5 1];
-    p3 = [0 0 1];
-    p4 = [0 0 0.5];
-    p5 = [0 -0.5 0.5];
-    feederRobot.moveToPoint(p1);
-    feederRobot.moveToPoint(p2);
-    feederRobot.moveToPoint(p3);
-    feederRobot.moveToPoint(p4);
-    feederRobot.moveToPoint(p5);
     
 %%

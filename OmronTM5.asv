@@ -62,11 +62,13 @@ classdef OmronTM5 < handle
                 end
              % Animate movement to point location
                 for i = 1:4:steps
-                   self.robot.animate(qMatrix(i,:));
+                   robotArm.model.animate(qMatrix(i,:));
+                   % run fkine once and store
+                        r = robotArm.model.fkine(qMatrix(i,:));
                    drawnow();
                 end
-            % self.robot.plot(q_sol, 'workspace', [-5 5 -5 5 0 5], ...
-            %     'nojoints', 'noname', 'noshadow', 'nowrist', 'delay', 0);
+            self.robot.plot(q_sol, 'workspace', [-5 5 -5 5 0 5], ...
+                'nojoints', 'noname', 'noshadow', 'nowrist', 'delay', 0);
         end
         
         %%
