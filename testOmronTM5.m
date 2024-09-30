@@ -22,16 +22,18 @@ classdef testOmronTM5 < handle
         %% Initialise
             function Initialise()
                 %% Initialize and Plot Robots
-                    % Initialize the OmronTM5
                         feederRobot = OmronTM5();
-                    % Plot feederRobot
-                        feederRobot.plotRobot();
+                    % Plot feederRobot - neutral straight upward position
+                        q = [0 deg2rad(-90) deg2rad(-90) 0 0 0];
+                        feederRobot.plotRobot(q);
+                    input('Press enter: Display highest reach')
+                        feederRobot.fkineOmron(q)   % Display highest reach transform
                     input('Press enter: Move in square motion')
-                        p1 = [0, -1, 1];
-                        p2 = [0, -1, 2];
-                        p3 = [0, 0, 2];
-                        p4 = [0, 0, 1];
-                        p5 = [0, -1, 1];
+                        p1 = [-0.5, -1, 0.25];
+                        p2 = [-0.5, -1.5, 0.25];
+                        p3 = [0.5, -1.5, 0.25];
+                        p4 = [0.5, -0.5, 0.25];
+                        p5 = [0.5, -0.5, 1];
                         feederRobot.moveToPoint(p1);
                         feederRobot.moveToPoint(p2);
                         feederRobot.moveToPoint(p3);
@@ -43,6 +45,8 @@ classdef testOmronTM5 < handle
             end
         %% Test Omron Teach
             function Test1()
+                feederRobot = OmronTM5();
+                axis equal;
                 feederRobot.teachOmron();
             end
         %% Test Omron Bounds / Limits
