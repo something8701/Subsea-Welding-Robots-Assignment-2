@@ -2,6 +2,9 @@ classdef testOmronTM5 < handle
 %#ok<*NASGU>
 %#ok<*NOPRT>
 %#ok<*TRYNC>
+    properties
+        feederRobot % Property to hold the OmronTM5 instance
+    end
 
     methods 
 		function self = testOmronTM5()
@@ -9,9 +12,9 @@ classdef testOmronTM5 < handle
 			clc
 			input('Press enter to begin')
             self.Initialise();
-            self.Test1(); 
-            self.Test2();
-            self.Test3();
+            %self.Test1(); 
+            %self.Test2();
+            %self.Test3();
 		end
 	end
     
@@ -23,15 +26,24 @@ classdef testOmronTM5 < handle
                         feederRobot = OmronTM5();
                     % Plot feederRobot
                         feederRobot.plotRobot();
-                            pause(1)
-                        feederRobot.plotRobot();
-                            pause(1)
-                        feederRobot.plotRobot();
-                            pause(1)
+                    input('Press enter: Move in square motion')
+                        p1 = [0, -1, 1];
+                        p2 = [0, -1, 2];
+                        p3 = [0, 0, 2];
+                        p4 = [0, 0, 1];
+                        p5 = [0, -1, 1];
+                        feederRobot.moveToPoint(p1);
+                        feederRobot.moveToPoint(p2);
+                        feederRobot.moveToPoint(p3);
+                        feederRobot.moveToPoint(p4);
+                        feederRobot.moveToPoint(p5);
+                    input('Press enter: Teach()')
+                    % Teach Robot
+                        feederRobot.teachOmron();
             end
         %% Test Omron Teach
             function Test1()
-                
+                feederRobot.teachOmron();
             end
         %% Test Omron Bounds / Limits
             function Test2()

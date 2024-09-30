@@ -47,6 +47,9 @@ classdef OmronTM5 < handle
 
         %% OMRON MOVEMENT CLASS FUNCTION - Move the robot's end-effector to a specified 3D point
         function moveToPoint(self, point)
+            if nargin < 2 || isempty(point)
+                point = [1, 1, 1]; % Default to zero position
+            end
             % Get current pose (Initial joint configuration)
                 q0 = self.robot.getpos;
             % Get points end-effector translation matrix
@@ -69,6 +72,10 @@ classdef OmronTM5 < handle
             %     'nojoints', 'noname', 'noshadow', 'nowrist', 'delay', 0);
         end
         
-        %%
+        %% OMRON TEACH FUNCTION
+        function teachOmron(self)
+            % Call teach function
+                self.robot.teach();
+        end
     end
 end
