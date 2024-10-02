@@ -51,11 +51,11 @@ set(hFig, 'Renderer', 'opengl');
 env.plotEnvironment(hAxes);
 
 %% Veari - TEST OMRON MOVEMENT AS IF WELDING IN SQUARE MOTION
-    p1 = [0 -0.5 0.5];
-    p2 = [0 -0.5 1];
-    p3 = [0 0 1];
-    p4 = [0 0 0.5];
-    p5 = [0 -0.5 0.5];
+    p1 = [-0.5, -1, 0.25];
+    p2 = [-0.5, -1.5, 0.25];
+    p3 = [0.5, -1.5, 0.25];
+    p4 = [0.5, -0.5, 0.25];
+    p5 = [0.5, -0.5, 1];
     feederRobot.moveToPoint(p1);
     feederRobot.moveToPoint(p2);
     feederRobot.moveToPoint(p3);
