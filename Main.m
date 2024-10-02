@@ -50,16 +50,14 @@ set(hFig, 'Renderer', 'opengl');
 %% Optionally, Re-Plot the Environment
 env.plotEnvironment(hAxes);
 
-%% Veari - TEST OMRON MOVEMENT AS IF WELDING IN SQUARE MOTION
-    p1 = [-0.5, -1, 0.25];
-    p2 = [-0.5, -1.5, 0.25];
-    p3 = [0.5, -1.5, 0.25];
-    p4 = [0.5, -0.5, 0.25];
-    p5 = [0.5, -0.5, 1];
-    feederRobot.moveToPoint(p1);
-    feederRobot.moveToPoint(p2);
-    feederRobot.moveToPoint(p3);
-    feederRobot.moveToPoint(p4);
-    feederRobot.moveToPoint(p5);
+%% STEP 1: OmronTM5 Picks up brick (or welding plate)
     
-%%
+%% STEP 2: OmronTM5 placed brick/welding plate on steel surface
+
+%% STEP 3: OmronTM5 holds brick/welding plate in place
+
+%% STEP 4: New robot arm welds edges of brick that are touching the steel surface
+
+%% STEP 5: When weld is complete - OmronTM5 releases brick/welding plate
+
+%% STEP 6: Both robot arms return to default state
