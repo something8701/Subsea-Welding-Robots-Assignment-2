@@ -1,14 +1,14 @@
 classdef Movement < handle
     properties
         feederRobot   % Instance of the feeder robot (Omron TM5)
-        amsFeederRobot  % Instance of the AMS feeder robot
+        welderRobot   % Instance of the welder robot (was AMSFeeder, now welderRS)
         hAxes         % Handle to the axes for plotting
     end
     methods
-        function self = Movement(feederRobot, amsFeederRobot, hAxes)
+        function self = Movement(feederRobot, welderRobot, hAxes)
             % Constructor to initialize the robots and axes
             self.feederRobot = feederRobot;
-            self.amsFeederRobot = amsFeederRobot;
+            self.welderRobot = welderRobot;
             if nargin < 3
                 self.hAxes = gca;
             else
@@ -16,51 +16,39 @@ classdef Movement < handle
             end
         end
 
-        function synchronizeRobots(self, weldingPoints)
-            % Updated method for smooth synchronized motion between points
+        % Method for moving the end-effector in a straight line with delay
+        function moveStraightLine(self, startPoint, endPoint, delayPerStep)
+            % Initialize start and end transformation matrices
+            T_start = transl(startPoint);  % Transformation for the start position
+            T_end = transl(endPoint);      % Transformation for the end position
 
-            % Initial joint configurations
-            q0_feeder = zeros(1, 6);
-            q0_ams = zeros(1, 6);
+            % Get the current position (joint states)
+            q0_feeder = self.feederRobot.robot.getpos();
+            q0_welder = self.welderRobot.robot.getpos();
 
-            % Loop through the points
-            for i = 1:size(weldingPoints, 1) - 1
-                point_curr = weldingPoints(i, :);
-                point_next = weldingPoints(i + 1, :);
+            % Inverse kinematics for the start and end points
+            qFeeder_start = self.feederRobot.robot.ikcon(T_start, q0_feeder);
+            qFeeder_end = self.feederRobot.robot.ikcon(T_end, qFeeder_start);
 
-                % Inverse kinematics for current and next point
-                T_feeder_curr = transl(point_curr);
-                T_feeder_next = transl(point_next);
-                qFeeder_curr = self.feederRobot.robot.ikcon(T_feeder_curr, q0_feeder);
-                qFeeder_next = self.feederRobot.robot.ikcon(T_feeder_next, qFeeder_curr);
+            qWelder_start = self.welderRobot.robot.ikcon(T_start, q0_welder);
+            qWelder_end = self.welderRobot.robot.ikcon(T_end, qWelder_start);
 
-                T_ams_curr = transl(point_curr);
-                T_ams_next = transl(point_next);
-                qAms_curr = self.amsFeederRobot.robot.ikcon(T_ams_curr, q0_ams);
-                qAms_next = self.amsFeederRobot.robot.ikcon(T_ams_next, qAms_curr);
+            % Define steps for smooth movement
+            numSteps = 50;
+            qFeeder_steps = jtraj(qFeeder_start, qFeeder_end, numSteps);
+            qWelder_steps = jtraj(qWelder_start, qWelder_end, numSteps);
 
-                % Interpolate between configurations
-                numSteps = 100;
-                qFeeder_steps = jtraj(qFeeder_curr, qFeeder_next, numSteps);
-                qAms_steps = jtraj(qAms_curr, qAms_next, numSteps);
+            % Execute straight-line motion for both robots
+            for step = 1:numSteps
+                % Plot the feeder robot
+                self.feederRobot.robot.plot(qFeeder_steps(step, :), 'workspace', [-5 5 -5 5 0 5], 'nojoints', 'noname', 'noshadow', 'nowrist');
+                
+                % Plot the welder robot
+                self.welderRobot.robot.plot(qWelder_steps(step, :), 'workspace', [-5 5 -5 5 0 5], 'nojoints', 'noname', 'noshadow', 'nowrist');
 
-                % Execute smooth motion
-                for step = 1:numSteps
-                    self.feederRobot.robot.plot(qFeeder_steps(step, :), 'workspace', [-5 5 -5 5 0 5], 'nojoints', 'noname', 'noshadow', 'nowrist');
-                    self.amsFeederRobot.robot.plot(qAms_steps(step, :), 'workspace', [-5 5 -5 5 0 5], 'nojoints', 'noname', 'noshadow', 'nowrist');
-                    drawnow;
-                end
-
-                % Update for the next iteration
-                q0_feeder = qFeeder_next;
-                q0_ams = qAms_next;
+                % Add delay for slowing down the movement
+                pause(delayPerStep);
             end
-        end
-
-        function safe = checkCollision(self, qFeeder, qAms)
-            % Collision checking function (optional)
-            isCollision = false; % Placeholder logic
-            safe = ~isCollision;
         end
     end
 end

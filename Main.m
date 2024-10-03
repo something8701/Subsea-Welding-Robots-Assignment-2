@@ -1,16 +1,27 @@
+% Main Script
+
 % Clear workspace and command window
 clear all;
 clc;
 % Close all figures
 close all;
 
+% Import only once and avoid duplicate warnings
+if ~bdIsLoaded('welder_m')
+    % Import the Simscape Multibody XML file for welder
+    welderSimModel = smimport('welder_m.xml');
+end
+
 %% Initialize Environment
 env = Environment();
 
-% Get the figure and axes handles
-hFig = gcf;
-hAxes = gca;
-hold(hAxes, 'on'); % Hold on to plot multiple items in the same axes
+% Add the welder model to the environment (avoid re-importing)
+if isempty(env.welderModel)
+    env.welderModel = smimport('welder_m.xml');
+end
+
+% Plot the environment and welder
+env.plotEnvironment(gca);
 
 %% Initialize and Plot Robots
 % Initialize the OmronTM5
@@ -18,12 +29,17 @@ feederRobot = OmronTM5();
 % Plot feederRobot
 feederRobot.plotRobot();
 
-% Initialize the AMS Feeder Robot
-amsFeederRobot = AMSFeeder();
-% Plot amsFeederRobot
-amsFeederRobot.plotRobot();
+% Initialize the welderRS Robot (was AMSFeeder)
+welderRobot = welderRS();  % Updated class name
+% Plot welderRobot
+welderRobot.plotRobot();
 
 %% Adjust Axes Properties
+% Get the figure and axes handles
+hFig = gcf;
+hAxes = gca;
+hold(hAxes, 'on'); % Hold on to plot multiple items in the same axes
+
 % Set axes background color to white
 set(hAxes, 'Color', [1 1 1]);
 % Set grid properties
@@ -47,17 +63,27 @@ view(hAxes, 3);
 % Set renderer to OpenGL for better lighting effects
 set(hFig, 'Renderer', 'opengl');
 
-%% Optionally, Re-Plot the Environment
-env.plotEnvironment(hAxes);
+%% Define the movement points
+% Define start point and end point (in a straight line)
+startPoint = [0.3, 0, 0.4];   % Start position (X, Y, Z)
+endPoint = [0.3, 0.3, 0.4];   % End position in a straight line (move along Y)
 
-%% STEP 1: OmronTM5 Picks up brick (or welding plate)
-    
-%% STEP 2: OmronTM5 placed brick/welding plate on steel surface
+% Create Movement class for synchronized robot motion
+movement = Movement(feederRobot, welderRobot, hAxes);
 
-%% STEP 3: OmronTM5 holds brick/welding plate in place
+% Move the robots with a delay for slowing down
+delayPerStep = 0.05; % Adjust the delay time (in seconds)
+movement.moveStraightLine(startPoint, endPoint, delayPerStep);
 
-%% STEP 4: New robot arm welds edges of brick that are touching the steel surface
-
-%% STEP 5: When weld is complete - OmronTM5 releases brick/welding plate
-
-%% STEP 6: Both robot arms return to default state
+%% Loop to allow user input for redo
+while true
+    userInput = input('Type "redo" to repeat the movement, or "exit" to quit: ', 's');
+    if strcmp(userInput, 'redo')
+        % Move robots again with the same movement
+        movement.moveStraightLine(startPoint, endPoint, delayPerStep);
+    elseif strcmp(userInput, 'exit')
+        break;
+    else
+        disp('Invalid input. Please type "redo" or "exit".');
+    end
+end
