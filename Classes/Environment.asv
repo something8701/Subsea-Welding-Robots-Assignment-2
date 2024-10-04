@@ -1,0 +1,92 @@
+classdef Environment < handle
+    properties
+        NX      % Size in X direction
+        NY      % Size in Y direction
+        NZ      % Height of the environment (Z direction)
+        texture % Texture image data
+        sand    % Sand texture image data
+        welderModel  % Property for the welder model
+    end
+    
+    methods
+        function self = Environment(NX, NY, NZ)
+            if nargin < 1
+                NX = 10;
+            end
+            if nargin < 2
+                NY = NX;
+            end
+            if nargin < 3
+                NZ = 5;
+            end
+            self.NX = NX;
+            self.NY = NY;
+            self.NZ = NZ;
+            
+            % Load the texture images
+            self.texture = imread('Documentation/P/water.png');
+            self.sand = imread('Documentation/Photos/sand.png');
+            
+            % Create a new figure and plot environment when instantiated
+            figure;
+            hAxes = gca;
+            self.plotEnvironment(hAxes);
+        end
+        
+        function plotEnvironment(self, hAxes)
+            if nargin < 2
+                hAxes = gca;
+            end
+            
+            % Plot the floor using the sand texture
+            x = linspace(-self.NX/2, self.NX/2, 2);
+            y = linspace(-self.NY/2, self.NY/2, 2);
+            [X, Y] = meshgrid(x, y);
+            Z = zeros(size(X));  % Z = 0 for the floor
+            surface('XData', X, 'YData', Y, 'ZData', Z, ...
+                'CData', self.sand, 'FaceColor', 'texturemap', ...
+                'EdgeColor', 'none', 'Parent', hAxes);
+            
+            % Plot the selected two walls
+            % Wall 2: Along Y-axis at X = NX/2
+            [Y, Z] = meshgrid(linspace(-self.NY/2, self.NY/2, 2), linspace(0, self.NZ, 2));
+            X = self.NX/2 * ones(size(Y));  % X is constant along this wall
+            surface('XData', X, 'YData', Y, 'ZData', Z, ...
+                'CData', self.texture, 'FaceColor', 'texturemap', ...
+                'EdgeColor', 'none', 'Parent', hAxes);
+            
+            % Wall 4: Along X-axis at Y = NY/2
+            [X, Z] = meshgrid(linspace(-self.NX/2, self.NX/2, 2), linspace(0, self.NZ, 2));
+            Y = self.NY/2 * ones(size(X));  % Y is constant along this wall
+            surface('XData', X, 'YData', Y, 'ZData', Z, ...
+                'CData', self.texture, 'FaceColor', 'texturemap', ...
+                'EdgeColor', 'none', 'Parent', hAxes);
+            
+            % Plot the ceiling
+            [X, Y] = meshgrid(linspace(-self.NX/2, self.NX/2, 2), linspace(-self.NY/2, self.NY/2, 2));
+            Z = self.NZ * ones(size(X));  % Z is constant for the ceiling
+            surface('XData', X, 'YData', Y, 'ZData', Z, ...
+                'CData', self.texture, 'FaceColor', 'texturemap', ...
+                'EdgeColor', 'none', 'Parent', hAxes);
+            
+            % Set the axes limits and labels
+            xlim(hAxes, [-self.NX/2, self.NX/2]);
+            ylim(hAxes, [-self.NY/2, self.NY/2]);
+            zlim(hAxes, [0 self.NZ]);  % Set Z-axis limits from 0 to NZ
+            xlabel(hAxes, 'X (m)');
+            ylabel(hAxes, 'Y (m)');
+            zlabel(hAxes, 'Z (m)');
+            
+            % Enable grid
+            grid(hAxes, 'on');
+            
+            % Visualize the welder in the environment, if available
+            if ~isempty(self.welderModel)
+                hold(hAxes, 'on');
+                % Plot the imported Simscape Multibody welder model
+                % This function will visualize the model (modify the parameters as needed)
+                smimport('welder_m.xml'); % Ensure it's imported to appear in the same figure
+            end
+        end
+    end
+end
