@@ -14,7 +14,7 @@ classdef OmronTM5700 < RobotBaseClass
             self.model.base = self.model.base.T * baseTr;
             self.PlotAndColourRobot();  
 
-            self.model.teach(); % Only for testing. Comment out later
+            % self.model.teach(); % Only for testing. Comment out later
         end
 
 %% Create the robot model
