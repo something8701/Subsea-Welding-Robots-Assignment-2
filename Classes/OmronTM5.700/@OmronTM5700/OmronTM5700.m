@@ -11,7 +11,7 @@ classdef OmronTM5700 < RobotBaseClass
             if nargin < 1			
 				baseTr = eye(4);				
             end
-            self.model.base = self.robot.base.T * baseTr * transl(0, -1, 0);    % Adjust as needed
+            self.model.base = self.model.base.T * baseTr;
             self.PlotAndColourRobot();  
 
             % self.model.teach(); % Only for testing. Comment out later
