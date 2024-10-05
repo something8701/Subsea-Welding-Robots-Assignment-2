@@ -1,7 +1,25 @@
- % Create the Omron TM5 (Assume TM5-700)
-            clf
-			clc
- 
+classdef OmronTM5700 < RobotBaseClass
+    %% OmronTM5700
+    properties(Access = public)              
+        plyFileNameStem = 'OmronTM5700';
+    end
+    
+    methods
+%% Define robot Function 
+        function self = OmronTM5700(baseTr)
+			self.CreateModel();
+            if nargin < 1			
+				baseTr = eye(4);				
+            end
+            self.model.base = self.model.base.T * baseTr;
+            self.PlotAndColourRobot();  
+
+            self.model.teach(); % Only for testing. Comment out later
+        end
+
+%% Create the robot model
+        function CreateModel(self)
+
             L1 = Link('d', 0.1452, 'a', 0, 'alpha', -pi/2);
             L2 = Link('d', 0.146,     'a', 0.329, 'alpha', pi);
             L3 = Link('d', 0.1297,     'a', 0.3115, 'alpha', pi);
@@ -24,20 +42,8 @@
             L5.offset = 0;
             L6.offset = 0;
             
-            % Create the SerialLink robot model
-            robot = SerialLink([L1 L2 L3 L4 L5 L6], 'name', 'Omron TM5 Test');
-
-            % Create 3D surface plot of floor.
-            surf([-1.0,-1.0;1.0,1.0] ...                % X-coordinates of surface
-                ,[-1.0,1.0;-1.0,1.0] ...                % Y-coordinates of surface
-                ,[0,0;0,0] ...                          % Z-coordinates of surface (flat plane)
-                ,'CData',imread('concrete.jpg') ...
-                ,'FaceColor','texturemap');
-            camlight;                                   % Run this once
-            axis equal;                                 % Equal scaling for all axes
-            % Set the view to 1-by-1-by-1
-                xlim([-1.5 1.5]); % Set limits for x-axis
-                ylim([-1.5 1.5]); % Set limits for y-axis
-                zlim([-0.5 1.5]); % Set limits for z-axis
-            q = [0 0 0 0 0 0];
-            robot.teach(q);
+            self.model = SerialLink([L1 L2 L3 L4 L5 L6], 'name', 'Omron TM5');
+        end
+     
+    end
+end
