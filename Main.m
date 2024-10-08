@@ -48,9 +48,9 @@ set(hAxes, 'GridColor', [0 0 0]); % Grid lines in black
 grid(hAxes, 'on');                % Turn on grid
 % Adjust axes limits and aspect ratio
 axis(hAxes, 'equal');
-xlim(hAxes, [-5, 5]);
-ylim(hAxes, [-5, 5]);
-zlim(hAxes, [0, 5]);
+xlim(hAxes, [-2.5, 2.5]);
+ylim(hAxes, [-2.5, 2.5]);
+zlim(hAxes, [0, 3]);
 
 % Add Lighting and Material Effects
 % Add a light source
@@ -107,17 +107,17 @@ function updateCartesian(app, robot)
     end
 end
 
-%% Define the movement points
-% Define start point and end point (in a straight line)
-startPoint = [0.3, 0, 0.4];   % Start position (X, Y, Z)
-endPoint = [0.3, 0.3, 0.4];   % End position in a straight line (move along Y)
-
-% Create Movement class for synchronized robot motion
-movement = Movement(feederRobotWrapper, welderRobot, hAxes);
-
-% Move the robots with a delay for slowing down
-delayPerStep = 0.05; % Adjust the delay time (in seconds)
-movement.moveStraightLine(startPoint, endPoint, delayPerStep);
+% %% Define the movement points
+% % Define start point and end point (in a straight line)
+% startPoint = [0.3, 0, 0.4];   % Start position (X, Y, Z)
+% endPoint = [0.3, 0.3, 0.4];   % End position in a straight line (move along Y)
+% 
+% % Create Movement class for synchronized robot motion
+% movement = Movement(feederRobotWrapper, welderRobot, hAxes);
+% 
+% % Move the robots with a delay for slowing down
+% delayPerStep = 0.05; % Adjust the delay time (in seconds)
+% movement.moveStraightLine(startPoint, endPoint, delayPerStep);
 
 %% Loop to allow user input for redo
 while true

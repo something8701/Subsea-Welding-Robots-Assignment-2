@@ -13,21 +13,21 @@ classdef Environment < handle
         % Constructor for the Environment class
         function self = Environment(NX, NY, NZ)
             if nargin < 1
-                NX = 5; % Default size
+                NX = 10; % Default size
             end
             if nargin < 2
                 NY = NX; % Make the environment square if NY not provided
             end
             if nargin < 3
-                NZ = 3;  % Default height
+                NZ = 5;  % Default height
             end
             self.NX = NX;
             self.NY = NY;
             self.NZ = NZ;
             
             % Load the texture images
-            self.texture = imread('Data/water.png');  % For walls and ceiling
-            self.sand = imread('Data/sand.png');      % For floor
+            self.texture = imread('../Data/water.png');  % For walls and ceiling
+            self.sand = imread('../Data/sand.png');      % For floor
 
             % Initialize welderModel and columnModel as empty
             self.welderModel = [];  % Initialize welderModel
@@ -98,31 +98,16 @@ classdef Environment < handle
         
         % Method to load and plot the column
         function loadAndPlotColumn(self, hAxes)
-            % Load the column PLY file as a triangulated surface
-            [faces, vertices, ~] = plyread('Data/column.ply', 'tri');
+            % Load the column PLY file
+            self.columnModel = pcread('Data/column.ply');
             
-            % Scale the vertices from meters to millimeters (if needed)
-            vertices = vertices * 0.01;  % Convert from meters to millimeters
-        
-            % Rotate the column around the X-axis to make it stand vertically
-            rotationMatrix = [1, 0, 0;
-                              0, cosd(90), -sind(90);
-                              0, sind(90), cosd(90)];  % 90-degree rotation around X-axis
+            % Scale the point cloud coordinates from meters to millimeters
+            self.columnModel.Location = self.columnModel.Location * 1000;
             
-            vertices = (rotationMatrix * vertices')';  % Apply rotation to vertices
-            
-            % Translate the column to press against Wall 4 (Y = NY/2)
-            translationVector = [0, self.NY/2 - 0, 0];  % Adjust for radius (85mm)
-            vertices = vertices + translationVector;  % Apply translation
-            
-            % Plot the column model using trisurf
-            trisurf(faces, vertices(:, 1), vertices(:, 2), vertices(:, 3), ...
-                'FaceColor', [0.8, 0.8, 0.8], 'EdgeColor', 'none', 'Parent', hAxes);
-            
-            % Optionally, adjust the appearance (e.g., lighting)
-            camlight('headlight');
-            lighting gouraud;
-            material dull;
+            % Plot the scaled column model
+            pcshow(self.columnModel, 'Parent', hAxes);
+       
+
         end
     end
 end
