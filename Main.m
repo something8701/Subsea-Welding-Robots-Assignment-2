@@ -32,7 +32,7 @@ feederRobotWrapper.robot = feederRobot.model;
 % Initialize the welderRS Robot
 welderRobot = welderRS();  % Instantiate the welder robot
 
-% **Plot the welderRobot**
+% Plot the welderRobot
 welderRobot.plotRobot();
 
 % Adjust Axes Properties
