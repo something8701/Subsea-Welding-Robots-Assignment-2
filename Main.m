@@ -6,35 +6,36 @@ clc;
 % Close all figures
 close all;
 
-% Import only once and avoid duplicate warnings
-if ~bdIsLoaded('welder_m')
-    % Import the Simscape Multibody XML file for welder
-    welderSimModel = smimport('welder_m.xml');
-end
+% Add the directory containing your classes to the MATLAB path
+addpath('Classes');
+addpath('Classes/OmronTM5700');
 
 %% Initialize Environment
-env = Environment();
+env = Environment(); 
 
-% Add the welder model to the environment (avoid re-importing)
+% Add the welderRS model to the environment (avoid re-importing)
 if isempty(env.welderModel)
-    env.welderModel = smimport('welder_m.xml');
+    env.welderModel = welderRS();  % Changed to welderRS
 end
 
 % Plot the environment and welder
 env.plotEnvironment(gca);
 
 %% Initialize and Plot Robots
-% Initialize the OmronTM5
-feederRobot = OmronTM5();
-% Plot feederRobot
-feederRobot.plotRobot();
+% Initialize the OmronTM5700
+feederRobot = OmronTM5700();  % Instantiate the feeder robot
 
-% Initialize the welderRS Robot (was AMSFeeder)
-welderRobot = welderRS();  % Updated class name
-% Plot welderRobot
+% Create a wrapper object that has a 'robot' property pointing to 'feederRobot.model'
+feederRobotWrapper = struct();
+feederRobotWrapper.robot = feederRobot.model;
+
+% Initialize the welderRS Robot
+welderRobot = welderRS();  % Instantiate the welder robot
+
+% **Plot the welderRobot**
 welderRobot.plotRobot();
 
-%% Adjust Axes Properties
+% Adjust Axes Properties
 % Get the figure and axes handles
 hFig = gcf;
 hAxes = gca;
@@ -51,13 +52,13 @@ xlim(hAxes, [-5, 5]);
 ylim(hAxes, [-5, 5]);
 zlim(hAxes, [0, 5]);
 
-%% Add Lighting and Material Effects
+% Add Lighting and Material Effects
 % Add a light source
 camlight('headlight');
 % Set material properties
 material(hAxes, 'dull');
 
-%% Set View and Renderer
+% Set View and Renderer
 % Set 3D view
 view(hAxes, 3);
 % Set renderer to OpenGL for better lighting effects
@@ -69,7 +70,7 @@ startPoint = [0.3, 0, 0.4];   % Start position (X, Y, Z)
 endPoint = [0.3, 0.3, 0.4];   % End position in a straight line (move along Y)
 
 % Create Movement class for synchronized robot motion
-movement = Movement(feederRobot, welderRobot, hAxes);
+movement = Movement(feederRobotWrapper, welderRobot, hAxes);
 
 % Move the robots with a delay for slowing down
 delayPerStep = 0.05; % Adjust the delay time (in seconds)
