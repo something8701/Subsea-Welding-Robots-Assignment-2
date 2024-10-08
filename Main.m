@@ -64,6 +64,49 @@ view(hAxes, 3);
 % Set renderer to OpenGL for better lighting effects
 set(hFig, 'Renderer', 'opengl');
 
+%% Initialise GUI
+app = GUI(); 
+
+% Set up callbacks to update robot joint movements
+addlistener(app.Link1, 'ValueChanged', @(src, event) updateJoint(1, app, feederRobotWrapper.robot));
+addlistener(app.Link2, 'ValueChanged', @(src, event) updateJoint(2, app, feederRobotWrapper.robot));
+addlistener(app.Link3, 'ValueChanged', @(src, event) updateJoint(3, app, feederRobotWrapper.robot));
+addlistener(app.Link4, 'ValueChanged', @(src, event) updateJoint(4, app, feederRobotWrapper.robot));
+addlistener(app.Link5, 'ValueChanged', @(src, event) updateJoint(5, app, feederRobotWrapper.robot));
+
+% Function to update robot joints
+function updateJoint(jointNum, app, robot)
+    % Update the robot joint angle based on the slider value
+    qRobot(jointNum) = app.(['Link', num2str(jointNum)]).Value;  % Get slider value
+    robot.animate(qRobot);  % Update robot pose
+end
+
+% Handle Cartesian movements (X, Y, Z inputs)
+addlistener(app.X, 'ValueChanged', @(src, event) updateCartesian(app, feederRobotWrapper.robot));
+addlistener(app.Y, 'ValueChanged', @(src, event) updateCartesian(app, feederRobotWrapper.robot));
+addlistener(app.Z, 'ValueChanged', @(src, event) updateCartesian(app, feederRobotWrapper.robot));
+
+% Function to update robot based on XYZ inputs (inverse kinematics)
+function updateCartesian(app, robot)
+    % Get the desired Cartesian position from the GUI inputs
+    x = app.X.Value;
+    y = app.Y.Value;
+    z = app.Z.Value;
+
+    % Compute the target transformation matrix
+    T = transl([x, y, z]);
+
+    % Solve for joint angles using inverse kinematics
+    qSol = robot.ikcon(T, robot.getpos());
+
+    % If a valid solution is found, update the robot configuration
+    if ~isempty(qSol)
+        robot.animate(qSol);
+    else
+        disp('No valid IK solution found');
+    end
+end
+
 %% Define the movement points
 % Define start point and end point (in a straight line)
 startPoint = [0.3, 0, 0.4];   % Start position (X, Y, Z)
