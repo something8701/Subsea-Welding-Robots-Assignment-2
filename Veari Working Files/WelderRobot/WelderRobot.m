@@ -14,7 +14,7 @@ classdef WelderRobot < RobotBaseClass
             self.model.base = self.model.base.T * baseTr;
             self.PlotAndColourRobot();  
             
-            % Teach() can be used to interact with OmronTM5
+            % Teach() can be used to interact with Welder Robot
                 self.model.teach();
         end
 
@@ -30,12 +30,12 @@ classdef WelderRobot < RobotBaseClass
             L7 = Link('d', 0.1092, 'a', 0,     'alpha', 0);
             
             % Incorporate joint limits
-            L1.qlim = [-270 270]*pi/180;        % Datasheet TM5-700 (+/-270)    % Tested -180 180
-            L2.qlim = [-90 90]*pi/180;        % Datasheet TM5-700 (+/-180)    % Tested -90 90
-            L3.qlim = [-90 90]*pi/180;          % Datasheet TM5-700 (+/-155)    % Tested -90 90
-            L4.qlim = [-90 180]*pi/180;        % Datasheet TM5-700 (+/-180)    % Tested -180 180
-            L5.qlim = [-90 90]*pi/180;          % Datasheet TM5-700 (+/-180)    % Tested -90 90
-            L6.qlim = [-225 225]*pi/180;        % Datasheet TM5-700 (+/-225)    % Tested -180 180
+            L1.qlim = [-270 270]*pi/180;        % Datasheet     % Tested 
+            L2.qlim = [-90 90]*pi/180;        % Datasheet     % Tested 
+            L3.qlim = [-90 90]*pi/180;          % Datasheet     % Tested 
+            L4.qlim = [-90 180]*pi/180;        % Datasheet     % Tested 
+            L5.qlim = [-90 90]*pi/180;          % Datasheet     % Tested 
+            L6.qlim = [-225 225]*pi/180;        % Datasheet     % Tested 
             L7.qlim = [0 0]*pi/180;        
         
             L1.offset = pi/2;
@@ -46,7 +46,7 @@ classdef WelderRobot < RobotBaseClass
             L6.offset = 0;
             L7.offset = 0;
             
-            self.model = SerialLink([L1 L2 L3 L4 L5 L6 L7], 'name', 'Omron TM5');
+            self.model = SerialLink([L1 L2 L3 L4 L5 L6 L7], 'name', 'Welder Robot');
         end
     %%  Teach function
         function OmronTeach(self, q)
