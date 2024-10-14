@@ -15,7 +15,7 @@ classdef WelderRobot < RobotBaseClass
             self.PlotAndColourRobot();  
             
             % Teach() can be used to interact with Welder Robot
-                self.model.teach();
+                %self.model.teach();
         end
 
 %% Create the robot model
@@ -73,7 +73,7 @@ classdef WelderRobot < RobotBaseClass
             % Get initial pos
                 initialq = self.model.getpos;
             % Get final transform
-                finalTr = transl(FinalCartesian) * rpy2tr(0, 180, 180, 'deg');
+                finalTr = transl(FinalCartesian) * rpy2tr(90, 0, 180, 'deg');
             % Use inverse kinematics to find q - joint angles for target coordinates. 
                 finalq = self.model.ikcon(finalTr,initialq);
             % Calculate using Trapezoidal Velocity Profile
@@ -84,7 +84,7 @@ classdef WelderRobot < RobotBaseClass
                     qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*finalq);
                 end
             % Animate movement to pickup zone
-            for i = 1:6:steps
+            for i = 1:10:steps
                 self.model.animate(qMatrix(i,:));
                 drawnow();
             end
