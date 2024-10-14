@@ -8,6 +8,10 @@ classdef Environment < handle
         welderModel  % Property to store the welder model
         columnModel  % Property to store the column model
         steelTileModel % Property to store the steel tile model
+        fishModel1   % Property to store the fish1 model
+        fishModel2   % Property to store the fish2 model
+        coralModel1  % Property to store the coral1 model
+        coralModel2  % Property to store the coral2 model
     end
     
     methods
@@ -30,27 +34,32 @@ classdef Environment < handle
             self.texture = imread('Data/water.png');  % For walls and ceiling
             self.sand = imread('Data/sand.png');      % For floor
 
-            % Initialize welderModel, columnModel, and steelTileModel as empty
+            % Initialize models as empty
             self.welderModel = [];  % Initialize welderModel
             self.columnModel = [];  % Initialize columnModel
             self.steelTileModel = [];  % Initialize steelTileModel
+            self.fishModel1 = [];  % Initialize fish1 model
+            self.fishModel2 = [];  % Initialize fish2 model
+            self.coralModel1 = [];  % Initialize coral1 model
+            self.coralModel2 = [];  % Initialize coral2 model
 
             % Create a new figure and plot environment when instantiated
             figure;
             hAxes = gca;  % Get current axes
-            self.plotEnvironment(hAxes);
+            self.plotEnvironment(hAxes);  % Plot the environment
             
             % Adjust the camera view to see all walls
             view(3);      % Set 3D view
             axis equal;   % Maintain aspect ratio
             
-            % Load and plot the column model
-            self.loadAndPlotColumn(hAxes);  % Load the column .ply file and plot
-            
-            % Load and plot the steel tiles
-            self.loadAndPlotSteelTiles(hAxes);  % Load the steel tiles and place them in a 3x3 grid
+            % Load and plot other elements
+            self.loadAndPlotColumn(hAxes);      % Column
+            self.loadAndPlotSteelTiles(hAxes);  % Steel tiles
+            self.loadAndPlotFish(hAxes);        % Fish
+            self.loadAndPlotCoral(hAxes);       % Coral
         end
         
+        % Method to plot the environment (floor and walls)
         function plotEnvironment(self, hAxes)
             if nargin < 2
                 hAxes = gca;
@@ -146,14 +155,14 @@ classdef Environment < handle
             vertices = (rotationMatrix * vertices')';  % Apply rotation to vertices
             
             % Define grid positions (3x3) for the steel tiles, moved closer to the column
-            gridX = [-0.3, 0, 0.3];     % tile x pos
-            gridY = [1.6, 1.3, 1];      % tile y pos
-
-            
+            gridX = [-0.3, 0, 0.3];     % tile x positions
+            gridY = [1.6, 1.3, 1];      % tile y positions
+            zLift = 0.05;               % Lift the tiles by 0.05 meters off the floor
+        
             for i = 1:length(gridX)
                 for j = 1:length(gridY)
-                    % Translate the vertices to each grid position
-                    translatedVertices = vertices + [gridX(i), gridY(j), 0];
+                    % Translate the vertices to each grid position with a slight lift on the Z-axis
+                    translatedVertices = vertices + [gridX(i), gridY(j), zLift];
                     
                     % Plot the steel tile at the current grid position
                     trisurf(faces, translatedVertices(:, 1), translatedVertices(:, 2), translatedVertices(:, 3), ...
@@ -162,6 +171,92 @@ classdef Environment < handle
             end
             
             % Optionally, adjust the appearance (e.g., lighting)
+            camlight('headlight');
+            lighting gouraud;
+            material dull;
+        end
+        
+        % Method to load and plot the fish models
+        function loadAndPlotFish(self, hAxes)
+            % Load fish1 and fish2 PLY files
+            [faces1, vertices1, ~] = plyread('Data/fish1.ply', 'tri');
+            [faces2, vertices2, ~] = plyread('Data/fish2.ply', 'tri');
+            
+            % Apply a scaling factor to both fish models (adjust the scaling factor as needed)
+            vertices1 = vertices1 * 0.01;  % Scaling for fish1
+            vertices2 = vertices2 * 0.06;  % Scaling for fish2
+            
+            % Rotate both fish by 180 degrees around the X-axis to correct their orientation
+            rotationMatrix = [1, 0, 0;
+                              0, cosd(180), -sind(180);
+                              0, sind(180), cosd(180)];
+            
+            vertices1 = (rotationMatrix * vertices1')';  % Apply rotation to fish1
+            vertices2 = (rotationMatrix * vertices2')';  % Apply rotation to fish2
+            
+            % Define positions for the fish models (floating in the air)
+            fishPos1 = [1.5, 0.5, 1.0];  % X, Y, Z position for fish1
+            fishPos2 = [-1.0, -0.5, 1.5]; % X, Y, Z position for fish2
+            
+            % Translate fish models to their respective positions
+            vertices1 = vertices1 + fishPos1;
+            vertices2 = vertices2 + fishPos2;
+            
+            % Plot fish1 and fish2
+            trisurf(faces1, vertices1(:, 1), vertices1(:, 2), vertices1(:, 3), ...
+                'FaceColor', [0.5, 0.5, 1], 'EdgeColor', 'none', 'Parent', hAxes);
+            trisurf(faces2, vertices2(:, 1), vertices2(:, 2), vertices2(:, 3), ...
+                'FaceColor', [1, 0.5, 0.5], 'EdgeColor', 'none', 'Parent', hAxes);
+            
+            % Adjust appearance
+            camlight('headlight');
+            lighting gouraud;
+            material dull;
+        end
+
+        % Method to load and plot the coral models
+        function loadAndPlotCoral(self, hAxes)
+            % Load the first coral PLY file
+            [faces1, vertices1, ~] = plyread('Data/coral1.ply', 'tri');
+            
+            % Scale the coral1 model (adjust the scaling factor as needed)
+            vertices1 = vertices1 * 0.01;  % Apply scaling factor to reduce size
+            
+            % Rotate the coral 180 degrees around the X-axis to flip it
+            rotationMatrix1 = [1, 0, 0;
+                               0, cosd(180), -sind(180);
+                               0, sind(180), cosd(180)];
+            
+            vertices1 = (rotationMatrix1 * vertices1')';  % Apply rotation to vertices
+            
+            % Translate and plot the first coral
+            translationVector1 = [1.5, -1.8, 0];  % Adjust for position
+            vertices1 = vertices1 + translationVector1;  % Apply translation
+            
+            trisurf(faces1, vertices1(:, 1), vertices1(:, 2), vertices1(:, 3), ...
+                'FaceColor', [0.4, 0.8, 0.4], 'EdgeColor', 'none', 'Parent', hAxes);
+            
+            % Load the second coral PLY file
+            [faces2, vertices2, ~] = plyread('Data/coral2.ply', 'tri');
+            
+            % Scale the coral2 model (adjust the scaling factor as needed)
+            vertices2 = vertices2 * 0.01;  % Apply scaling factor to reduce size
+            
+            % Rotate the second coral 180 degrees around the X-axis
+            rotationMatrix2 = [1, 0, 0;
+                               0, cosd(180), -sind(180);
+                               0, sind(180), cosd(180)];
+            
+            vertices2 = (rotationMatrix2 * vertices2')';  % Apply rotation
+            
+            % Translate and plot the second coral
+            translationVector2 = [-1.5, 1.0, 0];  % Adjust for position
+            vertices2 = vertices2 + translationVector2;  % Apply translation
+            
+            trisurf(faces2, vertices2(:, 1), vertices2(:, 2), vertices2(:, 3), ...
+                'FaceColor', [0.8, 0.5, 0.3], 'EdgeColor', 'none', 'Parent', hAxes);
+            
+            % Adjust appearance
             camlight('headlight');
             lighting gouraud;
             material dull;
