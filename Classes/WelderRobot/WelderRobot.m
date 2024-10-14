@@ -15,27 +15,27 @@ classdef WelderRobot < RobotBaseClass
             self.PlotAndColourRobot();  
             
             % Teach() can be used to interact with Welder Robot
-                self.model.teach();
+                %self.model.teach();
         end
 
 %% Create the robot model
         function CreateModel(self)
 
-            L1 = Link('d', 0.15, 'a', 0, 'alpha', -pi/2);
-            L2 = Link('d', 0.15,     'a', 0.4, 'alpha', pi);
+            L1 = Link('d', 0.16, 'a', 0, 'alpha', -pi/2);
+            L2 = Link('d', 0.13,     'a', 0.35, 'alpha', pi);
             L3 = Link('d', 0.13,     'a', 0.4, 'alpha', pi);
-            L4 = Link('d', 0.15, 'a', 0,     'alpha', pi/2);
-            L5 = Link('d', 0.15,     'a', 0,     'alpha', -pi/2);
-            L6 = Link('d', 0.15, 'a', 0,     'alpha', 0);
-            L7 = Link('d', 0.1, 'a', 0,     'alpha', 0);
+            L4 = Link('d', 0.13, 'a', 0,     'alpha', pi/2);
+            L5 = Link('d', 0.2,     'a', 0,     'alpha', pi/2);
+            L6 = Link('d', 0.13, 'a', 0,     'alpha', 0);
+            L7 = Link('d', 0.15, 'a', 0,     'alpha', 0);
             
             % Incorporate joint limits
             L1.qlim = [-270 270]*pi/180;        % Datasheet     % Tested 
             L2.qlim = [-90 90]*pi/180;        % Datasheet     % Tested 
-            L3.qlim = [-90 90]*pi/180;          % Datasheet     % Tested 
-            L4.qlim = [-90 180]*pi/180;        % Datasheet     % Tested 
+            L3.qlim = [-135 135]*pi/180;          % Datasheet     % Tested 
+            L4.qlim = [-100 100]*pi/180;        % Datasheet     % Tested 
             L5.qlim = [-90 90]*pi/180;          % Datasheet     % Tested 
-            L6.qlim = [-225 225]*pi/180;        % Datasheet     % Tested 
+            L6.qlim = [0 0]*pi/180;        % Datasheet     % Tested 
             L7.qlim = [0 0]*pi/180;        
         
             L1.offset = pi/2;
@@ -73,7 +73,7 @@ classdef WelderRobot < RobotBaseClass
             % Get initial pos
                 initialq = self.model.getpos;
             % Get final transform
-                finalTr = transl(FinalCartesian) * rpy2tr(0, 180, 180, 'deg');
+                finalTr = transl(FinalCartesian) * rpy2tr(90, 0, 180, 'deg');
             % Use inverse kinematics to find q - joint angles for target coordinates. 
                 finalq = self.model.ikcon(finalTr,initialq);
             % Calculate using Trapezoidal Velocity Profile
@@ -84,7 +84,7 @@ classdef WelderRobot < RobotBaseClass
                     qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*finalq);
                 end
             % Animate movement to pickup zone
-            for i = 1:6:steps
+            for i = 1:10:steps
                 self.model.animate(qMatrix(i,:));
                 drawnow();
             end

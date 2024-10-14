@@ -12,7 +12,8 @@ classdef UR3e < RobotBaseClass
 				baseTr = eye(4);				
             end
             self.model.base = self.model.base.T * baseTr;
-            self.PlotAndColourRobot();         
+            self.PlotAndColourRobot();   
+            self.model.teach();
         end
 
 %% Create the robot model
