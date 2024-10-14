@@ -32,10 +32,10 @@ classdef WelderRobot < RobotBaseClass
             % Incorporate joint limits
             L1.qlim = [-270 270]*pi/180;        % Datasheet     % Tested 
             L2.qlim = [-90 90]*pi/180;        % Datasheet     % Tested 
-            L3.qlim = [-90 90]*pi/180;          % Datasheet     % Tested 
-            L4.qlim = [-90 180]*pi/180;        % Datasheet     % Tested 
+            L3.qlim = [-135 135]*pi/180;          % Datasheet     % Tested 
+            L4.qlim = [-100 100]*pi/180;        % Datasheet     % Tested 
             L5.qlim = [-90 90]*pi/180;          % Datasheet     % Tested 
-            L6.qlim = [-225 225]*pi/180;        % Datasheet     % Tested 
+            L6.qlim = [0 0]*pi/180;        % Datasheet     % Tested 
             L7.qlim = [0 0]*pi/180;        
         
             L1.offset = pi/2;
