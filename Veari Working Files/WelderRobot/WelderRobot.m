@@ -21,12 +21,12 @@ classdef WelderRobot < RobotBaseClass
 %% Create the robot model
         function CreateModel(self)
 
-            L1 = Link('d', 0.15, 'a', 0, 'alpha', -pi/2);
-            L2 = Link('d', 0.15,     'a', 0.4, 'alpha', pi);
-            L3 = Link('d', 0.13,     'a', 0.4, 'alpha', pi);
-            L4 = Link('d', 0.15, 'a', 0,     'alpha', pi/2);
-            L5 = Link('d', 0.15,     'a', 0,     'alpha', -pi/2);
-            L6 = Link('d', 0.15, 'a', 0,     'alpha', 0);
+            L1 = Link('d', 0.16, 'a', 0, 'alpha', -pi/2);
+            L2 = Link('d', 0.16,     'a', 0.35, 'alpha', pi);
+            L3 = Link('d', 0.16,     'a', 0.3, 'alpha', pi);
+            L4 = Link('d', 0.16, 'a', 0,     'alpha', pi/2);
+            L5 = Link('d', 0.2,     'a', 0,     'alpha', pi/2);
+            L6 = Link('d', 0.16, 'a', 0,     'alpha', 0);
             L7 = Link('d', 0.1, 'a', 0,     'alpha', 0);
             
             % Incorporate joint limits
