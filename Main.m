@@ -9,13 +9,14 @@ close all;
 % Add the directory containing your classes to the MATLAB path
 addpath('Classes');
 addpath('Classes/OmronTM5700');
+addpath('Classes/WelderRobot');
 
 %% Initialize Environment
 env = Environment(); 
 
 % Add the welderRS model to the environment (avoid re-importing)
 if isempty(env.welderModel)
-    env.welderModel = welderRS();  % Changed to welderRS
+    env.welderModel = WelderRobot();  % Changed to welderRS
 end
 
 % Plot the environment and welder
@@ -30,7 +31,7 @@ feederRobotWrapper = struct();
 feederRobotWrapper.robot = feederRobot.model;
 
 % Initialize the welderRS Robot
-welderRobot = welderRS();  % Instantiate the welder robot
+welderRobot = WelderRobot();  % Instantiate the welder robot
 
 % Plot the welderRobot
 welderRobot.plotRobot();
