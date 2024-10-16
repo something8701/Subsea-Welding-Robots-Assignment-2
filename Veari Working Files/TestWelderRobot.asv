@@ -21,9 +21,8 @@
         %feederRobot.OmronTeach(q);
      
      % Create markings to see if it reaches the point
-        WeldLocations = [ -0.13 0.36 1.08      % Default State
-                            -0.3 0.5 0.9;      % Before start of weld
-                            -0.3 0.7 0.9;      % Starts welding
+        WeldLocations = [-0.3 0.5 0.9;         % Before start of 
+                            -0.3 0.7 0.9;      % Cartesian Coordinates
                             -0.1 0.7 0.9;
                             0.1 0.7 0.9;
                             0.1 0.7 0.7;
@@ -31,21 +30,29 @@
                             -0.1 0.7 0.5;
                             -0.3 0.7 0.5;
                             -0.3 0.7 0.7;
-                            -0.3 0.7 0.9        % Ends welding
-                            -0.3 0.5 0.9        % After weld is complete
-                            -0.13 0.36 1.08     % Default state
+                            -0.3 0.7 0.9
                             ];
-        [rows, cols] = size(WeldLocations);
         hold on;
         plot3(WeldLocations(:,1),WeldLocations(:,2),WeldLocations(:,3),'r*');
 
      % Set Goal Locations
 
      % Move to Goal Locations
-        for i = 1:rows
-            welderRobot.OmronMoveToCartesian(WeldLocations(i,:));
-            pause(1);
-        end
-     % Find default end effector transform
-            q1 = [0 0 0 0 deg2rad(90) 0 0];
-            welderRobot.OmronFkine(q1)
+
+            welderRobot.OmronMoveToCartesian(WeldLocations(1,:));
+                pause(1);
+            welderRobot.OmronMoveToCartesian(WeldLocations(2,:));
+                pause(1);
+            welderRobot.OmronMoveToCartesian(WeldLocations(3,:));
+                pause(1);
+            welderRobot.OmronMoveToCartesian(WeldLocations(4,:));
+                pause(1);
+            welderRobot.OmronMoveToCartesian(WeldLocations(5,:));
+                pause(1);
+            welderRobot.OmronMoveToCartesian(WeldLocations(6,:));
+                pause(1);
+            welderRobot.OmronMoveToCartesian(WeldLocations(7,:));
+                pause(1);
+            welderRobot.OmronMoveToCartesian(WeldLocations(8,:));
+                pause(1);
+            welderRobot.OmronMoveToCartesian(WeldLocations(9,:));

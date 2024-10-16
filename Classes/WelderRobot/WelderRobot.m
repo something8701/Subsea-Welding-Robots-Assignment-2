@@ -15,7 +15,7 @@ classdef WelderRobot < RobotBaseClass
             self.PlotAndColourRobot();  
             
             % Teach() can be used to interact with Welder Robot
-                %self.model.teach();
+                self.model.teach();
         end
 
 %% Create the robot model
@@ -32,9 +32,9 @@ classdef WelderRobot < RobotBaseClass
             % Incorporate joint limits
             L1.qlim = [-270 270]*pi/180;        % Datasheet     % Tested 
             L2.qlim = [-90 90]*pi/180;        % Datasheet     % Tested 
-            L3.qlim = [-135 135]*pi/180;          % Datasheet     % Tested 
-            L4.qlim = [-100 100]*pi/180;        % Datasheet     % Tested 
-            L5.qlim = [-90 90]*pi/180;          % Datasheet     % Tested 
+            L3.qlim = [-155 155]*pi/180;          % Datasheet     % Tested 
+            L4.qlim = [-120 120]*pi/180;        % Datasheet     % Tested 
+            L5.qlim = [-180 180]*pi/180;          % Datasheet     % Tested 
             L6.qlim = [0 0]*pi/180;        % Datasheet     % Tested 
             L7.qlim = [0 0]*pi/180;        
         
@@ -77,7 +77,7 @@ classdef WelderRobot < RobotBaseClass
             % Use inverse kinematics to find q - joint angles for target coordinates. 
                 finalq = self.model.ikcon(finalTr,initialq);
             % Calculate using Trapezoidal Velocity Profile
-                steps = 50;
+                steps = 35;
                 s = lspb(0,1,steps);
                 qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
                 for i = 1:steps
