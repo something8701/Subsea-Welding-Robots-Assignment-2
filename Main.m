@@ -1,7 +1,7 @@
 % Main Script
 
 % Clear workspace and command window
-clear all;
+clear;
 clc;
 % Close all figures
 close all;

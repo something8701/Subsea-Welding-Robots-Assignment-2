@@ -140,7 +140,7 @@ classdef Environment < handle
         end
         
         % Method to load and plot the steel tiles
-        function loadAndPlotSteelTiles(self, hAxes)
+        function loadAndPlotSteelTiles(~, hAxes)
             % Load the steel tile PLY file
             [faces, vertices, ~] = plyread('Data/steelTile.ply', 'tri');
             
@@ -177,7 +177,7 @@ classdef Environment < handle
         end
         
         % Method to load and plot the fish models
-        function loadAndPlotFish(self, hAxes)
+        function loadAndPlotFish(~, hAxes)
             % Load fish1 and fish2 PLY files
             [faces1, vertices1, ~] = plyread('Data/fish1.ply', 'tri');
             [faces2, vertices2, ~] = plyread('Data/fish2.ply', 'tri');
@@ -215,7 +215,7 @@ classdef Environment < handle
         end
 
         % Method to load and plot the coral models
-        function loadAndPlotCoral(self, hAxes)
+        function loadAndPlotCoral(~, hAxes)
             % Load the first coral PLY file
             [faces1, vertices1, ~] = plyread('Data/coral1.ply', 'tri');
             
