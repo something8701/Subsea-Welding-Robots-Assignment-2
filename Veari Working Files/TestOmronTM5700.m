@@ -28,6 +28,7 @@
             Location4 = [-0.4 -0.3 0.1];
             Location5 = [-0.4 0 0.1];
             Location6 = [-0.4 0.3 0.1];
+            
      % Move to Goal Locations
             feederRobot.OmronMoveToCartesian(Location1);
             feederRobot.OmronMoveToCartesian(Location2);

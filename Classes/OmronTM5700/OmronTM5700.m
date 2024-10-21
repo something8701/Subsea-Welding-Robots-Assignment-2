@@ -32,9 +32,9 @@ classdef OmronTM5700 < RobotBaseClass
             % Incorporate joint limits
             L1.qlim = [-270 270]*pi/180;        % Datasheet TM5-700 (+/-270)    % Tested -180 180
             L2.qlim = [-90 90]*pi/180;        % Datasheet TM5-700 (+/-180)    % Tested -90 90
-            L3.qlim = [-90 90]*pi/180;          % Datasheet TM5-700 (+/-155)    % Tested -90 90
+            L3.qlim = [-155 155]*pi/180;          % Datasheet TM5-700 (+/-155)    % Tested -90 90
             L4.qlim = [-180 180]*pi/180;        % Datasheet TM5-700 (+/-180)    % Tested -180 180
-            L5.qlim = [-90 90]*pi/180;          % Datasheet TM5-700 (+/-180)    % Tested -90 90
+            L5.qlim = [-180 180]*pi/180;          % Datasheet TM5-700 (+/-180)    % Tested -90 90
             L6.qlim = [-225 225]*pi/180;        % Datasheet TM5-700 (+/-225)    % Tested -180 180
             L7.qlim = [0 0]*pi/180;        
         

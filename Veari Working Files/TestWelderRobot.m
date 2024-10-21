@@ -37,6 +37,7 @@
                             ];
         [rows, cols] = size(WeldLocations);
         hold on;
+     % Create visual markings
         plot3(WeldLocations(:,1),WeldLocations(:,2),WeldLocations(:,3),'r*');
 
      % Set Goal Locations
