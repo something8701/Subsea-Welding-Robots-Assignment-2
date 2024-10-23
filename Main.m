@@ -33,9 +33,6 @@ feederRobotWrapper.robot = feederRobot.model;
 % Initialize the welderRS Robot
 welderRobot = WelderRobot();  % Instantiate the welder robot
 
-% Plot the welderRobot
-welderRobot.plotRobot();
-
 % Adjust Axes Properties
 % Get the figure and axes handles
 hFig = gcf;
