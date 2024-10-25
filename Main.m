@@ -16,7 +16,7 @@ env = Environment();
 
 % Add the welderRS model to the environment (avoid re-importing)
 if isempty(env.welderModel)
-    env.welderModel = WelderRobot();  % Changed to welderRS
+    env.welderModel = welderRS();  % Changed to welderRS
 end
 
 % Plot the environment and welder
