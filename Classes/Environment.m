@@ -54,7 +54,6 @@ classdef Environment < handle
             
             % Load and plot other elements
             self.loadAndPlotColumn(hAxes);      % Column
-            self.loadAndPlotSteelTiles(hAxes);  % Steel tiles
             self.loadAndPlotFish(hAxes);        % Fish
             self.loadAndPlotCoral(hAxes);       % Coral
         end
@@ -78,32 +77,32 @@ classdef Environment < handle
 
             % Plot the selected two walls
             % Wall 2: Along Y-axis at X = NX/2
-            [Y_wall, Z_wall] = meshgrid(linspace(-self.NY/2, self.NY/2, 2), linspace(0, self.NZ, 2));
-            X_wall = self.NX/2 * ones(size(Y_wall));
-            surface('XData', X_wall, 'YData', Y_wall, 'ZData', Z_wall, ...
-                'CData', self.texture, 'FaceColor', 'texturemap', ...
-                'EdgeColor', 'none', 'Parent', hAxes);
+                [Y_wall, Z_wall] = meshgrid(linspace(-self.NY/2, self.NY/2, 2), linspace(0, self.NZ, 2));
+                X_wall = self.NX/2 * ones(size(Y_wall));
+                surface('XData', X_wall, 'YData', Y_wall, 'ZData', Z_wall, ...
+                    'CData', self.texture, 'FaceColor', 'texturemap', ...
+                    'EdgeColor', 'none', 'Parent', hAxes);
             
             % Wall 4: Along X-axis at Y = NY/2
-            [X_wall, Z_wall] = meshgrid(linspace(-self.NX/2, self.NX/2, 2), linspace(0, self.NZ, 2));
-            Y_wall = self.NY/2 * ones(size(X_wall));
-            surface('XData', X_wall, 'YData', Y_wall, 'ZData', Z_wall, ...
-                'CData', self.texture, 'FaceColor', 'texturemap', ...
-                'EdgeColor', 'none', 'Parent', hAxes);
+                [X_wall, Z_wall] = meshgrid(linspace(-self.NX/2, self.NX/2, 2), linspace(0, self.NZ, 2));
+                Y_wall = self.NY/2 * ones(size(X_wall));
+                surface('XData', X_wall, 'YData', Y_wall, 'ZData', Z_wall, ...
+                    'CData', self.texture, 'FaceColor', 'texturemap', ...
+                    'EdgeColor', 'none', 'Parent', hAxes);
             
             % Plot the ceiling
-            Z_ceil = self.NZ * ones(size(X_wall));
-            surface('XData', X_wall, 'YData', Y_wall, 'ZData', Z_ceil, ...
-                'CData', self.texture, 'FaceColor', 'texturemap', ...
-                'EdgeColor', 'none', 'Parent', hAxes);
+                Z_ceil = self.NZ * ones(size(X_wall));
+                surface('XData', X_wall, 'YData', Y_wall, 'ZData', Z_ceil, ...
+                    'CData', self.texture, 'FaceColor', 'texturemap', ...
+                    'EdgeColor', 'none', 'Parent', hAxes);
             
             % Set the axes limits and labels
-            xlim(hAxes, [-self.NX/2, self.NX/2]);
-            ylim(hAxes, [-self.NY/2, self.NY/2]);
-            zlim(hAxes, [0, self.NZ]);  % Set Z-axis limits from 0 to NZ
-            xlabel(hAxes, 'X (m)');
-            ylabel(hAxes, 'Y (m)');
-            zlabel(hAxes, 'Z (m)');
+                xlim(hAxes, [-self.NX/2, self.NX/2]);
+                ylim(hAxes, [-self.NY/2, self.NY/2]);
+                zlim(hAxes, [0, self.NZ]);  % Set Z-axis limits from 0 to NZ
+                xlabel(hAxes, 'X (m)');
+                ylabel(hAxes, 'Y (m)');
+                zlabel(hAxes, 'Z (m)');
             
             % Enable grid and hold the plot
             grid(hAxes, 'on');
@@ -125,8 +124,8 @@ classdef Environment < handle
             
             vertices = (rotationMatrix * vertices')';  % Apply rotation to vertices
             
-            % Translate the column to press against Wall 4 (Y = NY/2)
-            translationVector = [0, self.NY/2.25 - 0, 0];  % Adjust for radius (85mm)
+            % Translate the column to press against Wall 4
+            translationVector = [0, 0.5, 0]; 
             vertices = vertices + translationVector;  % Apply translation
             
             % Plot the column model using trisurf
@@ -134,46 +133,9 @@ classdef Environment < handle
                 'FaceColor', [0.8, 0.8, 0.8], 'EdgeColor', 'none', 'Parent', hAxes);
             
             % Optionally, adjust the appearance (e.g., lighting)
-            camlight('headlight');
-            lighting gouraud;
-            material dull;
-        end
-        
-        % Method to load and plot the steel tiles
-        function loadAndPlotSteelTiles(~, hAxes)
-            % Load the steel tile PLY file
-            [faces, vertices, ~] = plyread('Data/steelTile.ply', 'tri');
-            
-            % Scale the vertices to 100mm (0.1m) if needed
-            vertices = vertices * 0.002;  
-            
-            % Rotate the tiles to lie flat on the floor (rotate -90 degrees around X-axis)
-            rotationMatrix = [1, 0, 0;
-                              0, cosd(-90), -sind(-90);
-                              0, sind(-90), cosd(-90)];
-            
-            vertices = (rotationMatrix * vertices')';  % Apply rotation to vertices
-            
-            % Define grid positions (3x3) for the steel tiles, moved closer to the column
-            gridX = [-0.3, 0, 0.3];     % tile x positions
-            gridY = [1.6, 1.3, 1];      % tile y positions
-            zLift = 0.05;               % Lift the tiles by 0.05 meters off the floor
-        
-            for i = 1:length(gridX)
-                for j = 1:length(gridY)
-                    % Translate the vertices to each grid position with a slight lift on the Z-axis
-                    translatedVertices = vertices + [gridX(i), gridY(j), zLift];
-                    
-                    % Plot the steel tile at the current grid position
-                    trisurf(faces, translatedVertices(:, 1), translatedVertices(:, 2), translatedVertices(:, 3), ...
-                        'FaceColor', [0.7, 0.7, 0.7], 'EdgeColor', 'none', 'Parent', hAxes);
-                end
-            end
-            
-            % Optionally, adjust the appearance (e.g., lighting)
-            camlight('headlight');
-            lighting gouraud;
-            material dull;
+                camlight('headlight');
+                lighting gouraud;
+                material dull;
         end
         
         % Method to load and plot the fish models
