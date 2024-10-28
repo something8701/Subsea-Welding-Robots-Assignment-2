@@ -85,8 +85,7 @@ classdef WelderRobot < RobotBaseClass
                 end
             % Animate movement to pickup zone
             for i = 1:10:steps
-                % Slow it down for testing
-                    pause(0.1);
+                
                 self.model.animate(qMatrix(i,:));
                 drawnow();
             end

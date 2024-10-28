@@ -121,7 +121,7 @@ classdef OmronTM5700 < RobotBaseClass
             % Animate movement to pickup zone
             for i = 1:6:steps
                 % Slow it down for testing
-                    pause(1);
+                    pause(0.1);
                 % Animate
                     self.model.animate(qMatrix(i,:));
                 % run fkine once and store

@@ -103,28 +103,28 @@
 
      % Move to Goal Locations
         % Welder moves out of the way
-            pause(2);
-            %feederRobot.OmronMove_FinalQKnown([pi/2 0 0 0 0 0 0]);
+                pause(1);
+            welderRobot.WelderMove_FinalQInput([-pi/2 pi/4 pi/4 0 pi/2 0 0]);
         % Position to pickup
-            pause(2);
+                pause(1);
             feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 0 0 0]);
-            pause(1);
+                pause(1);
             feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 (-pi/2) 0 0]);
-            pause(1);
+                pause(1);
             feederRobot.Omron_MoveToCartesian_Down([-0.35 0 0.3]);
-            pause(1);
+                pause(1);
             feederRobot.Omron_MoveToCartesian_Down([-0.35 0 0]);
-            pause(1);
-        % Pickup then position to default
+                pause(1);
+        % Picksup steel plate then moves to default position
             feederRobot.OmronAndSteel_MoveToCartesian_Down([-0.35 0 0.3]);
-            pause(1);
+                pause(1);
             feederRobot.OmronAndSteelMove_FinalQInput([pi/2 0 0 0 (-pi/2) 0 0]);
-            pause(1);
+                pause(1);
             feederRobot.OmronAndSteelMove_FinalQInput([0 0 0 0 (-pi/2) 0 0]);
-            pause(1);
-            %feederRobot.OmronMoveToCartesian_NegativeX([-0.1 0.7 0.7])
-        % Pickup then position to place
-            
+                pause(1);
+        % Moves steel plate to wall
+            feederRobot.OmronAndSteelMove_FinalQInput([0 0 0 0 (-pi/2) 0 0]);
+                pause(1);
         % Release then default
 
 %% Loop to allow user input for redo
