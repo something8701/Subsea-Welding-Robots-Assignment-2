@@ -25,7 +25,7 @@ classdef OmronTM5700 < RobotBaseClass
                 end
 
             % Teach() can be used to interact with OmronTM5
-                % self.model.teach();
+                self.model.teach();
         end
 
 %% Create the robot model
@@ -109,6 +109,42 @@ classdef OmronTM5700 < RobotBaseClass
                 initialq = self.model.getpos;
             % Get final transform
                 finalTr = transl(FinalCartesian) * rpy2tr(0, 180, 180, 'deg');
+            % Use inverse kinematics to find q - joint angles for target coordinates. 
+                finalq = self.model.ikcon(finalTr,initialq);
+            % Calculate using Trapezoidal Velocity Profile
+                steps = 50;
+                s = lspb(0,1,steps);
+                qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
+                for i = 1:steps
+                    qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*finalq);
+                end
+            % Animate movement to pickup zone
+            for i = 1:6:steps
+                % Slow it down for testing
+                    pause(0.1);
+                % Animate
+                    self.model.animate(qMatrix(i,:));
+                % run fkine once and store
+                    EndEffectorTr = self.model.fkine([qMatrix(i,:)]);
+                    EndEffectorTr = EndEffectorTr.T;
+                % Move steel to end effector pose
+                    delete(self.SteelPlate);
+                    self.SteelPlate = PlaceObject('SteelPlateLink0.PLY', [EndEffectorTr(1,4), EndEffectorTr(2,4), EndEffectorTr(3,4)]);
+                    verts = [get(self.SteelPlate,'Vertices'), ones(size(get(self.SteelPlate,'Vertices'),1),1)] * EndEffectorTr;
+                    set(self.SteelPlate,'Vertices',verts(:,1:3))
+                drawnow();
+            end
+    end
+    %% Move Omron and steel plate move - based on cartesian input facing wall
+    function OmronAndSteel_MoveToCartesian_Wall(self,FinalCartesian)
+            % 
+            if nargin < 2
+                FinalCartesian = [-0.5, 0, 0];    % Default state
+            end
+            % Get initial pos
+                initialq = self.model.getpos;
+            % Get final transform
+                finalTr = transl(FinalCartesian) * rpy2tr(-90, 0, 0, 'deg');
             % Use inverse kinematics to find q - joint angles for target coordinates. 
                 finalq = self.model.ikcon(finalTr,initialq);
             % Calculate using Trapezoidal Velocity Profile

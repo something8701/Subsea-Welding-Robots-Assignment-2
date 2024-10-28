@@ -21,7 +21,7 @@
         feederRobot = OmronTM5700([eye(4)],2);    % Instantiate the feeder robot - At origin
                                                   % Plots steel plate
     % Initialize the welderRS Robot
-        BaseTr = eye(4) * transl(0.35,0,0);
+        BaseTr = eye(4) * transl(0.3,0,0);
         welderRobot = WelderRobot(BaseTr);  % Instantiate the welder robot - At (0.35, 0, 0)
 
     % Adjust Axes Properties
@@ -103,10 +103,9 @@
 
      % Move to Goal Locations
         % Welder moves out of the way
-                pause(1);
             welderRobot.WelderMove_FinalQInput([-pi/2 pi/4 pi/4 0 pi/2 0 0]);
-        % Position to pickup
                 pause(1);
+        % Position to pickup
             feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 0 0 0]);
                 pause(1);
             feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 (-pi/2) 0 0]);
@@ -123,8 +122,38 @@
             feederRobot.OmronAndSteelMove_FinalQInput([0 0 0 0 (-pi/2) 0 0]);
                 pause(1);
         % Moves steel plate to wall
-            feederRobot.OmronAndSteelMove_FinalQInput([0 0 0 0 (-pi/2) 0 0]);
+            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0 0.4 0.7]);
                 pause(1);
+            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0 0.5 0.7]);
+                pause(1);
+        % Welder does welding
+            % Create markings to see if it reaches the point
+            WeldLocations = [ -0.13 0.36 1.08      % Default State
+                -0.3 0.5 0.9;      % Before start of weld
+                -0.3 0.7 0.9;      % Starts welding
+                -0.1 0.7 0.9;
+                0.1 0.7 0.9;
+                0.1 0.7 0.7;
+                0.1 0.7 0.5;
+                -0.1 0.7 0.5;
+                -0.3 0.7 0.5;
+                -0.3 0.7 0.7;
+                -0.3 0.7 0.9        % Ends welding
+                -0.3 0.5 0.9        % After weld is complete
+                -0.13 0.36 1.08     % Default state
+                ];
+            [rows, cols] = size(WeldLocations);
+            hold on;
+            % Create visual markings
+            plot3(WeldLocations(:,1),WeldLocations(:,2),WeldLocations(:,3),'r*');
+    
+            % Set Goal Locations
+    
+            % Move to Goal Locations
+            for i = 1:rows
+                welderRobot.WelderMoveToCartesian(WeldLocations(i,:));
+                pause(1);
+            end
         % Release then default
 
 %% Loop to allow user input for redo
