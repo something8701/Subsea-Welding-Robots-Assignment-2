@@ -124,8 +124,8 @@ classdef Environment < handle
             
             vertices = (rotationMatrix * vertices')';  % Apply rotation to vertices
             
-            % Translate the column to press against Wall 4
-            translationVector = [0, 0.5, 0]; 
+            % Translate the column
+            translationVector = [0, 1, 0]; 
             vertices = vertices + translationVector;  % Apply translation
             
             % Plot the column model using trisurf
