@@ -26,7 +26,7 @@ env.plotEnvironment(gca);
 % Initialize the OmronTM5700
 feederRobot = OmronTM5700();  % Instantiate the feeder robot
 % Move the feeder robot to a new position
-feederRobot.model.base = transl(1, 0, 0);  % Move feeder robot to (X=1, Y=-0.5)
+feederRobot.model.base = transl(1, -0.5, 0);  % Move feeder robot to (X=1, Y=-0.5)
 
 % Create a wrapper object that has a 'robot' property pointing to 'feederRobot.model'
 feederRobotWrapper = struct();
@@ -34,11 +34,7 @@ feederRobotWrapper.robot = feederRobot.model;
 
 % Initialize the welderRS Robot
 welderRobot = WelderRobot();  % Instantiate the welder robot
-% Move the welder robot to a new position
-welderRobot.model.base = transl(-1, 0, 0);  % Move welder robot to (X=-1, Y=0.5)
-% Plot both robots in the environment
-feederRobot.model.plot(zeros(1, feederRobot.model.n), 'workspace', [-2.5 2.5 -2.5 2.5 0 2.5]);
-welderRobot.model.plot(zeros(1, welderRobot.model.n), 'workspace', [-2.5 2.5 -2.5 2.5 0 2.5]);
+
 % Adjust Axes Properties
 % Get the figure and axes handles
 hFig = gcf;
