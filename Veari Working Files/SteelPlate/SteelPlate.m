@@ -1,58 +1,30 @@
-classdef SteelPlate < handle
-    % STEELPLATE A class that creates a steel plate object
-    % The steel plate can be plotted at a specific location.
-    
-    properties
-        %> A steel plate model
-        steelplateModel;
-        
-        %> Base pose for the steel plate
-        basePose;
+classdef SteelPlate < RobotBaseClass
+    %% OmronTM5700
+    properties(Access = public)              
+        plyFileNameStem = 'SteelPlate';
     end
     
     methods
-        %% Constructor
-        function self = SteelPlate(base)
+%% Define robot Function 
+        function self = SteelPlate(baseTr)
+			self.CreateModel();
             if nargin < 1			
-				base = [0 0 0];				
+				baseTr = eye(4);				
             end
-            % Set the base location for the steel plate
-                self.basePose = SE3(SE2(base(1), base(2), 0));
-                self.steelplateModel = self.GetPlateModel('SteelPlate');
+            self.model.base = self.model.base.T * baseTr;
+            self.PlotAndColourRobot();  
+        end
 
-            % Plot the steel plate model at the specified base location
-                self.Plot();
-        end
+%% Create the robot model
+        function CreateModel(self)
+            L1 = Link('d', 0.1, 'a', 0, 'alpha', 0);
+            
+            % Incorporate joint limits
+            L1.qlim = 0;  
         
-        function delete(self)
-            handles = findobj('Tag', self.steelplateModel.name);
-            h = get(handles, 'UserData');
-            try delete(h.robot); end
-            try delete(h); end
-            try delete(handles); end
-        end
-        
-        %% Plot the steel plate
-        function Plot(self)
-            plot3d(self.steelplateModel, 0, 'base', self.basePose, 'noarrow');
-            hold on;
-            axis equal
-            if isempty(findobj(get(gca, 'Children'), 'Type', 'Light'))
-                camlight;
-            end
-        end
-    end
-    
-    methods (Static)
-        %% GetPlateModel
-        function model = GetPlateModel(name)
-            if nargin < 1
-                name = 'SteelPlate';
-            end
-            [faceData, vertexData] = plyread('SteelPlateLink0.ply', 'tri');
-            model = SerialLink(Link('alpha', pi/2, 'a', 0, 'd', 0.1, 'offset', 0), 'name', name);
-            model.faces = {[], faceData};
-            model.points = {[], vertexData};
+            L1.offset = pi/2;
+            
+            self.model = SerialLink([L1], 'name', 'Omron TM5');
         end
     end
 end

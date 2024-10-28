@@ -15,7 +15,7 @@ classdef WelderRobot < RobotBaseClass
             self.PlotAndColourRobot();  
             
             % Teach() can be used to interact with Welder Robot
-                %self.model.teach();
+                self.model.teach();
         end
 
 %% Create the robot model
@@ -65,7 +65,7 @@ classdef WelderRobot < RobotBaseClass
         end
 
     %% Move Welder function
-    function WelderMoveToCartesian(self,FinalCartesian)
+    function WelderMoveToCartesian_Wall(self,FinalCartesian)
             % 
             if nargin < 2
                 FinalCartesian = [-0.5, 0, 0];    % Default state

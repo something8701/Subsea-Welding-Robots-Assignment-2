@@ -96,11 +96,7 @@
         end
     end
 
-%% Draft Do Movement
-    % Set Goal Locations
-        % Cartesian Coordinates
-            Location1 = [-0.2224 -0.1223 0.8917];
-
+%% Do Movement - Individual Movements
      % Move to Goal Locations
         % Welder moves out of the way
             welderRobot.WelderMove_FinalQInput([-pi/2 pi/4 pi/4 0 pi/2 0 0]);
@@ -122,39 +118,55 @@
             feederRobot.OmronAndSteelMove_FinalQInput([0 0 0 0 (-pi/2) 0 0]);
                 pause(1);
         % Moves steel plate to wall
-            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0 0.4 0.7]);
+            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0.2 0.4 0.8]);
                 pause(1);
-            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0 0.5 0.7]);
+            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0.2 0.5 0.8]);
+                pause(2);
+        % Place Steel Plate for Test
+            SteelPlate1 = PlaceObject('SteelPlateLink0.PLY', [0.2, 0.4, 0.8]);
+            verts = [get(SteelPlate1, 'Vertices'), ones(size(get(SteelPlate1, 'Vertices'), 1), 1)] * rpy2tr(90, 0, 0, 'deg');
+            set(SteelPlate1, 'Vertices', verts(:, 1:3));
+        % Move Omron away for welding to occur
+            feederRobot.OmronMoveToCartesian_Wall([0.2 0.4 0.8]);
+                pause(1);
+            feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 0 0 0]);
+                pause(1);
+            feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 (-pi/2) 0 0]);
+                pause(1);
+            feederRobot.OmronMove_FinalQInput([pi/2 deg2rad(70) 0 0 (-pi/2) 0 0]);
                 pause(1);
         % Welder does welding
             % Create markings to see if it reaches the point
-            WeldLocations = [ -0.13 0.36 1.08      % Default State
-                                -0.3 0.5 0.9;      % Before start of weld
-                                -0.3 0.7 0.9;      % Starts welding
-                                -0.1 0.7 0.9;
-                                0.1 0.7 0.9;
-                                0.1 0.7 0.7;
-                                0.1 0.7 0.5;
-                                -0.1 0.7 0.5;
-                                -0.3 0.7 0.5;
-                                -0.3 0.7 0.7;
-                                -0.3 0.7 0.9        % Ends welding
-                                -0.3 0.5 0.9        % After weld is complete
-                                -0.13 0.36 1.08     % Default state
-                                            ];
-            [rows, cols] = size(WeldLocations);
-            hold on;
+                WeldLocations = [0 0.4 1;         % Before start of weld
+                                    0 0.5 1;      % Starts welding
+                                    0.2 0.5 1;
+                                    0.4 0.5 1;
+                                    0.4 0.5 0.8;
+                                    0.4 0.5 0.6;
+                                    0.2 0.5 0.6;
+                                    0 0.5 0.6;
+                                    0 0.5 0.8;
+                                    0 0.5 1;       % Ends welding
+                                    0 0.4 1        % After weld is complete
+                                    ];
+                [rows, cols] = size(WeldLocations);
+                hold on;
             % Create visual markings
-            plot3(WeldLocations(:,1),WeldLocations(:,2),WeldLocations(:,3),'r*');
-    
-            % Set Goal Locations
-    
+                plot3(WeldLocations(:,1),WeldLocations(:,2)-0.01,WeldLocations(:,3),'r*');
+            
+                welderRobot.WelderMove_FinalQInput([0 0 0 0 0 0 0]);
+                pause(1);
+            % welderRobot.WelderMove_FinalQInput([-pi/2 pi/4 pi/4 0 pi/2 0 0]);
+                pause(1);
             % Move to Goal Locations
             for i = 1:rows
-                welderRobot.WelderMoveToCartesian(WeldLocations(i,:));
+                welderRobot.WelderMoveToCartesian_Wall(WeldLocations(i,:));
                 pause(1);
             end
-        % Release then default
+            welderRobot.WelderMove_FinalQInput([0 0 0 0 0 0 0]);
+                pause(1);
+            % welderRobot.WelderMove_FinalQInput([-pi/2 pi/4 pi/4 0 pi/2 0 0]);
+                pause(1);
 
 %% Loop to allow user input for redo
     % while true
