@@ -64,8 +64,8 @@ classdef OmronTM5700 < RobotBaseClass
             OmronPose = self.model.fkine(q) %#ok<NOPRT,NASGU>
         end
 
-    %% Move Omron function
-    function OmronMoveToCartesian(self,FinalCartesian)
+    %% Move Omron function - Face Down Direction
+    function OmronMoveToCartesian_Down(self,FinalCartesian)
             % 
             if nargin < 2
                 FinalCartesian = [-0.5, 0, 0];    % Default state
@@ -82,6 +82,52 @@ classdef OmronTM5700 < RobotBaseClass
                 qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
                 for i = 1:steps
                     qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*finalq);
+                end
+            % Animate movement to pickup zone
+            for i = 1:6:steps
+                self.model.animate(qMatrix(i,:));
+                drawnow();
+            end
+    end
+    %% Move Omron function - Negative X Direction
+    function OmronMoveToCartesian_NegativeX(self,FinalCartesian)
+            % 
+            if nargin < 2
+                FinalCartesian = [-0.5, 0, 0];    % Default state
+            end
+            % Get initial pos
+                initialq = self.model.getpos;
+            % Get final transform
+                finalTr = transl(FinalCartesian) * rpy2tr(90, 0, 180, 'deg');
+            % Use inverse kinematics to find q - joint angles for target coordinates. 
+                finalq = self.model.ikcon(finalTr,initialq);
+            % Calculate using Trapezoidal Velocity Profile
+                steps = 50;
+                s = lspb(0,1,steps);
+                qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
+                for i = 1:steps
+                    qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*finalq);
+                end
+            % Animate movement to pickup zone
+            for i = 1:6:steps
+                self.model.animate(qMatrix(i,:));
+                drawnow();
+            end
+    end
+    %% Move Omron function - Using Final Q
+    function OmronMove_FinalQKnown(self,FinalQ)
+            % 
+                if nargin < 2
+                    FinalQ = [0 0 0 0 0 0 0];    % Default state
+                end
+            % Get initial pos
+                initialq = self.model.getpos;
+            % Calculate using Trapezoidal Velocity Profile
+                steps = 50;
+                s = lspb(0,1,steps);
+                qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
+                for i = 1:steps
+                    qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*FinalQ);
                 end
             % Animate movement to pickup zone
             for i = 1:6:steps
