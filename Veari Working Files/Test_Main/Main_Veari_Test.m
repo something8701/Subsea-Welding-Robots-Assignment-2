@@ -11,18 +11,24 @@
         addpath('Classes/WelderRobot');
 
 %% Initialize Environment
-    env = Environment(); 
+    env = Environment_Veari_Test(); 
 
     % Plot the environment
         env.plotEnvironment(gca);
 
 %% Initialize and Plot Robots
     % Initialize the OmronTM5700
-        feederRobot = OmronTM5700();    % Instantiate the feeder robot
+        feederRobot = OmronTM5700();    % Instantiate the feeder robot - At origin
     
     % Initialize the welderRS Robot
-        welderRobot = WelderRobot();  % Instantiate the welder robot
+        BaseTr = eye(4) * transl(0.25,0,0);
+        welderRobot = WelderRobot(BaseTr);  % Instantiate the welder robot - At (0.35, 0, 0)
     
+    % Initialize Steel Plate 
+        h_1 = PlaceObject('SteelPlateLink0.PLY',[-0.35,0,0]);
+        verts = [get(h_1,'Vertices'), ones(size(get(h_1,'Vertices'),1),1)];
+        set(h_1,'Vertices',verts(:,1:3))
+
     % Adjust Axes Properties
         % Get the figure and axes handles
             hFig = gcf;
@@ -95,15 +101,46 @@
         end
     end
 
+%% Draft Do Movement
+    % Set Goal Locations
+        % Cartesian Coordinates
+            Location1 = [-0.2224 -0.1223 0.8917];
+
+     % Move to Goal Locations
+        % Welder moves out of the way
+            pause(2);
+            feederRobot.OmronMove_FinalQKnown([pi/2 0 0 0 0 0 0]);
+        % Position to pickup
+            pause(2);
+            feederRobot.OmronMove_FinalQKnown([pi/2 0 0 0 0 0 0]);
+            pause(1);
+            feederRobot.OmronMove_FinalQKnown([pi/2 0 0 0 (-pi/2) 0 0]);
+            pause(1);
+            feederRobot.OmronMoveToCartesian_Down([-0.35 0 0.3]);
+            pause(1);
+            feederRobot.OmronMoveToCartesian_Down([-0.35 0 0]);
+            pause(1);
+        % Pickup then position to default
+            feederRobot.OmronMoveToCartesian_Down([-0.35 0 0.3]);
+            pause(1);
+            feederRobot.OmronMove_FinalQKnown([pi/2 0 0 0 (-pi/2) 0 0]);
+            pause(1);
+            feederRobot.OmronMove_FinalQKnown([0 0 0 0 (-pi/2) 0 0]);
+            pause(1);
+            %feederRobot.OmronMoveToCartesian_NegativeX([-0.1 0.7 0.7])
+        % Pickup then position to place
+            
+        % Release then default
+
 %% Loop to allow user input for redo
-    while true
-        userInput = input('Type "redo" to repeat the movement, or "exit" to quit: ', 's');
-        if strcmp(userInput, 'redo')
-            % Move robots again with the same movement
-            movement.moveStraightLine(startPoint, endPoint, delayPerStep);
-        elseif strcmp(userInput, 'exit')
-            break;
-        else
-            disp('Invalid input. Please type "redo" or "exit".');
-        end
-    end
+    % while true
+    %     userInput = input('Type "redo" to repeat the movement, or "exit" to quit: ', 's');
+    %     if strcmp(userInput, 'redo')
+    %         % Move robots again with the same movement
+    %         movement.moveStraightLine(startPoint, endPoint, delayPerStep);
+    %     elseif strcmp(userInput, 'exit')
+    %         break;
+    %     else
+    %         disp('Invalid input. Please type "redo" or "exit".');
+    %     end
+    % end
