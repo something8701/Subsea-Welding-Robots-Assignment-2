@@ -129,19 +129,19 @@
         % Welder does welding
             % Create markings to see if it reaches the point
             WeldLocations = [ -0.13 0.36 1.08      % Default State
-                -0.3 0.5 0.9;      % Before start of weld
-                -0.3 0.7 0.9;      % Starts welding
-                -0.1 0.7 0.9;
-                0.1 0.7 0.9;
-                0.1 0.7 0.7;
-                0.1 0.7 0.5;
-                -0.1 0.7 0.5;
-                -0.3 0.7 0.5;
-                -0.3 0.7 0.7;
-                -0.3 0.7 0.9        % Ends welding
-                -0.3 0.5 0.9        % After weld is complete
-                -0.13 0.36 1.08     % Default state
-                ];
+                                -0.3 0.5 0.9;      % Before start of weld
+                                -0.3 0.7 0.9;      % Starts welding
+                                -0.1 0.7 0.9;
+                                0.1 0.7 0.9;
+                                0.1 0.7 0.7;
+                                0.1 0.7 0.5;
+                                -0.1 0.7 0.5;
+                                -0.3 0.7 0.5;
+                                -0.3 0.7 0.7;
+                                -0.3 0.7 0.9        % Ends welding
+                                -0.3 0.5 0.9        % After weld is complete
+                                -0.13 0.36 1.08     % Default state
+                                            ];
             [rows, cols] = size(WeldLocations);
             hold on;
             % Create visual markings

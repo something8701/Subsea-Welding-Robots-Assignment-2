@@ -116,7 +116,11 @@ classdef Environment_Veari_Test < handle
             
             % Scale the vertices from meters to millimeters (if needed)
             vertices = vertices * 0.0018;  % Conversion / Scaling
-        
+            
+            % Scale the vertices in the x-direction
+                widthFactor = 3;  % Change this value to adjust the width
+                vertices(:, 1) = vertices(:, 1) * widthFactor;  % Widen in the x-direction
+
             % Rotate the column around the X-axis to make it stand vertically
             rotationMatrix = [1, 0, 0;
                               0, cosd(90), -sind(90);
