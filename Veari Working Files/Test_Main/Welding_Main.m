@@ -24,6 +24,14 @@
         Plate = PlaceObject('SteelPlate.PLY',[-0.35,0,0.5]);
         verts = [get(Plate,'Vertices'), ones(size(get(Plate,'Vertices'),1),1)];
         set(Plate,'Vertices',verts(:,1:3))
+    % Place Plate
+        Stop = PlaceObject('StopButton.ply',[0.3,-0.5,0.5]);
+        verts = [get(Stop,'Vertices'), ones(size(get(Stop,'Vertices'),1),1)];
+        set(Stop,'Vertices',verts(:,1:3))
+    % Place Plate
+        Stop = PlaceObject('StopButton.ply',[-2.5,-2.5,0]);
+        verts = [get(Stop,'Vertices'), ones(size(get(Stop,'Vertices'),1),1)];
+        set(Stop,'Vertices',verts(:,1:3))
 
 %% Initialize and Plot Robots
     % Initialize the OmronTM5700
@@ -124,7 +132,8 @@
     % Create visual markings
         plot3(WeldLocations(:,1),WeldLocations(:,2)-0.01,WeldLocations(:,3),'r*');
 %% Do Movement - Individual Movements
-     % Move to Goal Locations
+    input('Press enter to begin welding operation')
+    % Move to Goal Locations
         % Welder moves out of the way
             welderRobot.WelderMove_FinalQInput([-pi/2 pi/4 pi/4 0 pi/2 0 0]);
         % Change View
