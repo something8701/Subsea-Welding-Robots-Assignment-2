@@ -19,11 +19,11 @@ classdef OmronTM5700 < RobotBaseClass
             self.PlotAndColourRobot();  
             % This is for testing - only generates Steel Plate
                 if Case == 2
-                    steelPlate = SteelPlate(1);
+                    steelPlate = SteelPlate(1, -0.35, 0, 0.5);
                 end
 
             % Teach() can be used to interact with OmronTM5
-                self.model.teach();
+                % self.model.teach();
         end
 
 %% Create the robot model

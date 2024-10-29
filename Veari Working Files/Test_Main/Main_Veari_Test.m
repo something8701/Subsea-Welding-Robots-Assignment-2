@@ -17,17 +17,18 @@
         env.plotEnvironment(gca);
 
     % Place ROV
-        ROV = PlaceObject('ROV.PLY',[-0.5,-1.5,0]);
+        ROV = PlaceObject('ROV.PLY',[0,-0.2,0]);
         verts = [get(ROV,'Vertices'), ones(size(get(ROV,'Vertices'),1),1)];
         set(ROV,'Vertices',verts(:,1:3))
 
 %% Initialize and Plot Robots
     % Initialize the OmronTM5700
-        feederRobot = OmronTM5700([eye(4)],2);    % Instantiate the feeder robot - At origin
+        oBaseTr = transl(0,0,0.5);
+        feederRobot = OmronTM5700(oBaseTr,2);    % Instantiate the feeder robot - At origin
                                                   % Plots steel plate (Case 2)
     % Initialize the welderRS Robot
-        BaseTr = eye(4) * transl(0.3,0,0);
-        welderRobot = WelderRobot(BaseTr);  % Instantiate the welder robot - At (0.35, 0, 0)
+        wBaseTr = transl(0.3,0,0.5);
+        welderRobot = WelderRobot(wBaseTr);        % Instantiate the welder robot - At (0.35, 0, 0)
 
     % Adjust Axes Properties
         % Get the figure and axes handles
@@ -59,7 +60,8 @@
             set(hFig, 'Renderer', 'opengl');
 
 %% Initialise GUI
-    app = GUI(); 
+    % app = GUI(); 
+    robotGUI();
 
 % Set up callbacks to update robot joint movements
     addlistener(app.Link1, 'ValueChanged', @(src, event) updateJoint(1, app, feederRobotWrapper.robot));
@@ -102,16 +104,16 @@
     end
 
 %% Create markings for weld locations
-    WeldLocations = [   -0.05 0.25 0.9;      % Before start of weld
-                        -0.05 0.45 0.9;      % Starts welding
-                        0.15 0.45 0.9;
-                        0.35 0.45 0.9;
-                        0.35 0.45 0.7;
-                        0.15 0.45 0.7;
-                        -0.05 0.45 0.7;
-                        -0.05 0.45 0.9;       % Ends welding
-                        -0.05 0.25 0.9;       % After weld is complete
-                        0.15,0.45,0.8          % ONLY for plotting the centre
+    WeldLocations = [   -0.05 0.25 1.4;      % Before start of weld
+                        -0.05 0.45 1.4;      % Starts welding
+                        0.15 0.45 1.4;
+                        0.35 0.45 1.4;
+                        0.35 0.45 1.2;
+                        0.15 0.45 1.2;
+                        -0.05 0.45 1.2;
+                        -0.05 0.45 1.4;       % Ends welding
+                        -0.05 0.25 1.4;       % After weld is complete
+                        0.15,0.45,1.3          % ONLY for plotting the centre
                         ];
     [rows, cols] = size(WeldLocations);
     hold on;
@@ -124,24 +126,24 @@
         % Omron position to pickup
             feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 0 0 0]);
             feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 (-pi/2) 0 0]);
-            feederRobot.Omron_MoveToCartesian_Down([-0.35 0 0.3]);
-            feederRobot.Omron_MoveToCartesian_Down([-0.35 0 0]);
+            feederRobot.Omron_MoveToCartesian_Down([-0.35 0 0.8]);
+            feederRobot.Omron_MoveToCartesian_Down([-0.35 0 0.5]);
         % Omron Picksup steel plate then moves to default position
-            feederRobot.OmronAndSteel_MoveToCartesian_Down([-0.35 0 0.3]);
+            feederRobot.OmronAndSteel_MoveToCartesian_Down([-0.35 0 0.8]);
             feederRobot.OmronAndSteelMove_FinalQInput([pi/2 0 0 0 (-pi/2) 0 0]);
             feederRobot.OmronAndSteelMove_FinalQInput([0 0 0 0 (-pi/2) 0 0]);
         % Omron Moves steel plate to wall
-            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0.15 0.35 0.8]);
-            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0.15 0.45 0.8]);
+            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0.15 0.35 1.3]);
+            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0.15 0.45 1.3]);
         % Omron Move Omron away for welding to occur
-            feederRobot.OmronMoveToCartesian_Wall([0.15 0.35 0.8]);
-            feederRobot.OmronMove_FinalQInput([-pi/2 0 (-pi/4) 0 0 0 0]);
+            feederRobot.OmronMoveBase([0,-0.35,0.5]);
             feederRobot.OmronMove_FinalQInput([-pi/2 0 0 0 0 0 0]);
             feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 (-pi/2) 0 0]);
-            feederRobot.OmronMoveBase([0,-0.5,0]);
+            feederRobot.OmronMove_FinalQInput([(pi/2) deg2rad(80) 0 0 (-pi/2) 0 0]);
         % Welder does welding
                 welderRobot.WelderMove_FinalQInput([0 0 0 0 0 0 0]);
-                welderRobot.WelderMove_FinalQInput([0 0 0 0 pi/2 0 0]);
+                welderRobot.WelderMove_FinalQInput([0 deg2rad(-45) deg2rad(-45) 0 0 0 0]);
+                welderRobot.WelderMove_FinalQInput([0 deg2rad(-45) deg2rad(-45) 0 pi/2 0 0]);
             % Move to Goal Locations
             for i = 1:rows-1
                 welderRobot.WelderMoveToCartesian([WeldLocations(i,:)],90,0,180);

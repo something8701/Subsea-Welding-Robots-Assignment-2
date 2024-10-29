@@ -15,7 +15,7 @@ classdef WelderRobot < RobotBaseClass
             self.PlotAndColourRobot();  
             
             % Teach() can be used to interact with Welder Robot
-                %self.model.teach();
+                % self.model.teach();
         end
 
 %% Create the robot model

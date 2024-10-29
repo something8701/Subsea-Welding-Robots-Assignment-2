@@ -18,7 +18,7 @@ classdef SteelPlate < handle
         %% Constructor
         % function thatinitialises the number of bricks
         % If a number of bricks is provided, it updates default number
-        function self = SteelPlate(numBricks)
+        function self = SteelPlate(numBricks,X,Y,Z)
             if nargin > 0
                 self.numBricks = numBricks; % Set brick count if provided 
             end
@@ -26,19 +26,19 @@ classdef SteelPlate < handle
             % Workspace is centered at (0,0), X and Y limits based on plot size
             self.workspaceDimensions = [-self.plotSize(1)/2, self.plotSize(1)/2, ...
                                         -self.plotSize(2)/2, self.plotSize(2)/2, ...
-                                        -2, self.maxHeight];
+                                        0, self.maxHeight];
             % Initialize bricks
-            self.initializeBricks();
+            self.initializeBricks(X,Y,Z);
         end
 
         %% Method to initialize the brick models
-        function initializeBricks(self)
+        function initializeBricks(self,X,Y,Z)
             for i = 1:self.numBricks
                 % Create a brick model for each brick
-                self.brickModel{i} = self.GetBrickModel(['SteelPlateLink0.PLY', num2str(i)]);
+                self.brickModel{i} = self.GetBrickModel(['SteelPlate.PLY', num2str(i)]);
                 % Generate the pose of bricks in a grid iteratively
-                    basePose = SE3(SE2(-0.35, 0, 0));
-                self.brickModel{i}.base = basePose.T * transl(0, 0, 0);                             % Adjust the base as required
+                    basePose = SE3(SE2(X, Y, 0));
+                self.brickModel{i}.base = basePose.T * transl(0, 0, Z);                             % Adjust the base as required
                 % Plot the 3D model of the brick
                 plot3d(self.brickModel{i}, 0, 'workspace', self.workspaceDimensions,'view', [-30, 30], 'delay', 0, 'noarrow', 'nowrist');
                 % Hold on after the first plot for subsequent bricks
@@ -74,7 +74,7 @@ classdef SteelPlate < handle
                 name = 'Brick';
             end
             % Load the 3D model from the PLY file
-            [faceData, vertexData] = plyread('SteelPlateLink0.PLY', 'tri');
+            [faceData, vertexData] = plyread('SteelPlate.PLY', 'tri');
             % Define a single link to represent the brick
             link1 = Link('alpha', pi, 'a', 0, 'd', 0.01, 'offset', 0);
             model = SerialLink(link1, 'name', name);
