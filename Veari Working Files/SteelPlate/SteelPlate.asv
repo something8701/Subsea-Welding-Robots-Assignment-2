@@ -1,24 +1,24 @@
-%% Vicky Choy 14273611 & Vearinama Kila 12582336
+%% Vearinama Kila - 12582336
 classdef SteelPlate < handle
-    %% Creates user defined number of bricks in a grid    
+    %% Creates a set number of Steel Plate payloads   
     %#ok<*TRYNC>    
 
     properties (Constant)
-        maxHeight = 2; % Maximum height for the workspace
+        maxHeight = 2;              % Maximum height for the workspace
     end
     
     properties
-        numBricks = 1;               % Default number of bricks (updated name)
-        brickModel;                   % A grid structure of brick models
+        steelPlateNum = 1;            % Default number of SteelPlates
+        steelPlateModel;              % Model
         plotSize = [2, 2];            % Plot size in meters
         workspaceDimensions;          % Dimensions of the workspace
     end
 
     methods
         %% Constructor
-        % function thatinitialises the number of bricks
-        % If a number of bricks is provided, it updates default number
-        function self = SteelPlate(numBricks)
+            % function initialises the generates Steel Plates
+
+        function self = bricks(numBricks)
             if nargin > 0
                 self.numBricks = numBricks; % Set brick count if provided 
             end
@@ -26,7 +26,7 @@ classdef SteelPlate < handle
             % Workspace is centered at (0,0), X and Y limits based on plot size
             self.workspaceDimensions = [-self.plotSize(1)/2, self.plotSize(1)/2, ...
                                         -self.plotSize(2)/2, self.plotSize(2)/2, ...
-                                        -2, self.maxHeight];
+                                        0, self.maxHeight];
             % Initialize bricks
             self.initializeBricks();
         end
@@ -35,10 +35,10 @@ classdef SteelPlate < handle
         function initializeBricks(self)
             for i = 1:self.numBricks
                 % Create a brick model for each brick
-                self.brickModel{i} = self.GetBrickModel(['SteelPlateLink0.PLY', num2str(i)]);
+                self.brickModel{i} = self.GetBrickModel(['brick', num2str(i)]);
                 % Generate the pose of bricks in a grid iteratively
-                    basePose = SE3(SE2(-0.35, 0, 0));
-                self.brickModel{i}.base = basePose.T * transl(0, 0, 0);                             % Adjust the base as required
+                basePose = SE3(SE2(0.3 + mod((i-1), 3)/(9), -0.15 + floor((i-1)/3)/(6), 0));
+                self.brickModel{i}.base = basePose.T * transl(0, 0, -0.02); % Adjust the base for table
                 % Plot the 3D model of the brick
                 plot3d(self.brickModel{i}, 0, 'workspace', self.workspaceDimensions,'view', [-30, 30], 'delay', 0, 'noarrow', 'nowrist');
                 % Hold on after the first plot for subsequent bricks
@@ -49,20 +49,20 @@ classdef SteelPlate < handle
         end
 
         %% Destructor method to clean up brick models
-        % function delete(self)
-        %     % Delete function removes all bricks from the scene when the object is destroyed
-        %     for index = 1:self.numBricks
-        %         % Finds graphical objects associated to brick
-        %         handles = findobj('Tag', self.brickModel{index}.name);
-        %         h = get(handles, 'UserData');
-        %         % Try delete the robot, wrist, link and any associated objects
-        %         try delete(h.robot); end
-        %         try delete(h.wrist); end
-        %         try delete(h.link); end
-        %         try delete(h); end
-        %         try delete(handles); end
-        %     end
-        % end
+        function delete(self)
+            % Delete function removes all bricks from the scene when the object is destroyed
+            for index = 1:self.numBricks
+                % Finds graphical objects associated to brick
+                handles = findobj('Tag', self.brickModel{index}.name);
+                h = get(handles, 'UserData');
+                % Try delete the robot, wrist, link and any associated objects
+                try delete(h.robot); end
+                try delete(h.wrist); end
+                try delete(h.link); end
+                try delete(h); end
+                try delete(handles); end
+            end
+        end
     end
 
     methods (Static)
@@ -74,9 +74,9 @@ classdef SteelPlate < handle
                 name = 'Brick';
             end
             % Load the 3D model from the PLY file
-            [faceData, vertexData] = plyread('SteelPlateLink0.PLY', 'tri');
+            [faceData, vertexData] = plyread('objects/brick.ply', 'tri');
             % Define a single link to represent the brick
-            link1 = Link('alpha', pi, 'a', 0, 'd', 0.01, 'offset', 0);
+            link1 = Link('alpha', pi/2, 'a', 0, 'd', 0.3, 'offset', 0);
             model = SerialLink(link1, 'name', name);
             % Assign the 3D data to the robot model's link (Link 1)
             model.faces = {[], faceData}; % Faces for Link 1

@@ -129,7 +129,7 @@ classdef Environment_Veari_Test < handle
             vertices = (rotationMatrix * vertices')';  % Apply rotation to vertices
             
             % Translate the column
-            translationVector = [0, 0.7, 0]; 
+            translationVector = [0, 0.6, 0]; 
             vertices = vertices + translationVector;  % Apply translation
             
             % Plot the column model using trisurf

@@ -96,12 +96,13 @@ classdef WelderRobot < RobotBaseClass
             % Display movement to final position
                 for i = 1:steps
                     % Get the joint angles corresponding to the current Cartesian position
-                        currentTr = transl(cartesianPath(i, :)) * rpy2tr(Roll, Pitch, Yaw, 'deg');
+                        currentTr = transl(cartesianPath(i, :)) * rpy2tr(0, 180, 180, 'deg');
                         currentq = self.model.ikcon(currentTr, initialq);
+            
+                    % Slow it down for testing
+                        pause(0.1);
                     self.model.animate(currentq);
                     drawnow();
-                    % Slow it down
-                        pause(0.1);
                 end
             % % Use inverse kinematics to find q - joint angles for target coordinates. 
             %     finalq = self.model.ikcon(finalTr,initialq);
@@ -118,7 +119,6 @@ classdef WelderRobot < RobotBaseClass
             %     self.model.animate(qMatrix(i,:));
             %     drawnow();
             % end
-            pause(0.5);
     end
     %% Move Welder function - Welder Moves By itself - Using Final Q input
     function WelderMove_FinalQInput(self,FinalQ)
@@ -142,7 +142,6 @@ classdef WelderRobot < RobotBaseClass
                 self.model.animate(qMatrix(i,:));
                 drawnow();
             end
-            pause(0.5);
     end
     end
 end
