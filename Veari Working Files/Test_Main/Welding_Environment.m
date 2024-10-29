@@ -31,8 +31,8 @@ classdef Welding_Environment < handle
             self.NZ = NZ;
             
             % Load the texture images
-            self.texture = imread('Data/water.png');  % For walls and ceiling
-            self.sand = imread('Data/sand.png');      % For floor
+            self.texture = imread(fullfile('Data/water.png'));  % For walls and ceiling
+            self.sand = imread(fullfile('Data/sand.png'));      % For floor
 
             % Initialize models as empty
             self.welderModel = [];  % Initialize welderModel
