@@ -2,27 +2,49 @@ classdef OmronTM5700 < RobotBaseClass
     %% OmronTM5700
     properties(Access = public)              
         plyFileNameStem = 'OmronTM5700';
-        steelPlate = SteelPlate(1, -0.35, 0, 0.5);
+        % steelPlate = SteelPlate(1, -0.35, 0, 0.5);
+        steelPlate
     end
     
     methods
 %% Define robot Function 
         function self = OmronTM5700(baseTr,Case)
-			self.CreateModel();
-            if nargin < 1			
-				baseTr = eye(4);				
+			% Initialize the robot model
+            self.CreateModel();
+            
+            % Set base transform
+            if nargin < 1
+                baseTr = eye(4);				
             end
-            if nargin < 2		
-				Case = 1;
+            if nargin < 2
+                Case = 1;
             end
-            self.model.base = self.model.base.T * baseTr;
+            self.model.base = SE3(self.model.base.T * baseTr); % Ensure compatibility with SE3
             self.PlotAndColourRobot();  
-            % This is for testing - only generates Steel Plate
-                if Case == 2
-                    % steelPlate = SteelPlate(1, -0.35, 0, 0.5);
-                    % startTr = transl(-0.35, 0, 0.5);
-                    % self.steelPlate.moveSteelPlate(startTr);
+            
+            % Initialize steel plate if Case == 2 and SteelPlate class exists
+            if Case == 2
+                if exist('SteelPlate', 'class') == 8
+                    self.steelPlate = SteelPlate(1, -0.35, 0, 0.5);
+                else
+                    warning('SteelPlate class is not defined. Skipping initialization.');
                 end
+            end
+            % self.CreateModel();
+            % if nargin < 1			
+			% 	baseTr = eye(4);				
+            % end
+            % if nargin < 2		
+			% 	Case = 1;
+            % end
+            % self.model.base = self.model.base.T * baseTr;
+            % self.PlotAndColourRobot();  
+            % % This is for testing - only generates Steel Plate
+            %     if Case == 2
+            %         % steelPlate = SteelPlate(1, -0.35, 0, 0.5);
+            %         % startTr = transl(-0.35, 0, 0.5);
+            %         % self.steelPlate.moveSteelPlate(startTr);
+            %     end
 
             % Teach() can be used to interact with OmronTM5
                 % self.model.teach();

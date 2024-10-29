@@ -14,9 +14,14 @@ classdef robotGUI < handle
     
     methods
         function app = robotGUI()
+            % Initialize the OmronTM5700
+                oBaseTr = transl(0,0,0.5);
+                                                  % Plots steel plate (Case 2)
+            % Initialize the welderRS Robot
+                wBaseTr = transl(0.3,0,0.5);
             % Initialize the robots
-            app.robotOmron = OmronTM5700();  % Replace with your Omron robot model
-            app.robotWelder = WelderRobot(); % Replace with your Welder robot model
+            app.robotOmron = OmronTM5700(oBaseTr,2);  % Replace with your Omron robot model
+            app.robotWelder = WelderRobot(wBaseTr); % Replace with your Welder robot model
             app.qOmron = zeros(1, app.robotOmron.model.n); % Initialize joint angles for Omron
             app.qWelder = zeros(1, app.robotWelder.model.n); % Initialize joint angles for Welder
             app.eStopEnabled = false; % Initially, EStop is not enabled
