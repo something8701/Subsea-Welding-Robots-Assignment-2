@@ -7,11 +7,10 @@ classdef robotGUI < handle
         robotWelder   % Welder robot model
         qOmron        % Joint configuration for Omron robot
         qWelder       % Joint configuration for Welder robot
-        eStopEnabled  % Tracks if EStop is enabled
-        resumeButton  % Resume button
-        eStopButton   % EStop button
+        eStopEnabled
+        resumeButton
+        eStopButton
     end
-    
     methods
         function app = robotGUI()
             % Initialize the robots
@@ -19,12 +18,13 @@ classdef robotGUI < handle
             app.robotWelder = WelderRobot(); % Replace with your Welder robot model
             app.qOmron = zeros(1, app.robotOmron.model.n); % Initialize joint angles for Omron
             app.qWelder = zeros(1, app.robotWelder.model.n); % Initialize joint angles for Welder
-            app.eStopEnabled = false; % Initially, EStop is not enabled
+            app.eStopEnabled = false;
 
             % Create GUI
             app.createGUI();
             
             % Set initial robot positions in the existing environment
+            % NEED TO MOVE UP 0.5 units
             app.robotOmron.model.animate(app.qOmron);
             app.robotWelder.model.animate(app.qWelder);
         end
@@ -47,7 +47,7 @@ classdef robotGUI < handle
                     'Position', [20, 600 - 60*i, 100, 22]);
                 
                 % Ensure joint limits are valid for Omron
-                if ~isfinite(jointLimitsOmron(i, 1)) || ~isfinite(jointLimitsOmron(i, 2)) || jointLimitsOmron(i, 1) >= jointLimitsOmron(i, 2)
+                if isnan(jointLimitsOmron(i, 1)) || isnan(jointLimitsOmron(i, 2)) || jointLimitsOmron(i, 1) >= jointLimitsOmron(i, 2)
                     jointLimitsOmron(i, :) = [-pi, pi]; % Default limits if invalid
                 end
                 
@@ -69,7 +69,7 @@ classdef robotGUI < handle
                     'Position', [420, 600 - 60*i, 100, 22]);
                 
                 % Ensure joint limits are valid for Welder
-                if ~isfinite(jointLimitsWelder(i, 1)) || ~isfinite(jointLimitsWelder(i, 2)) || jointLimitsWelder(i, 1) >= jointLimitsWelder(i, 2)
+                if isnan(jointLimitsWelder(i, 1)) || isnan(jointLimitsWelder(i, 2)) || jointLimitsWelder(i, 1) >= jointLimitsWelder(i, 2)
                     jointLimitsWelder(i, :) = [-pi, pi]; % Default limits if invalid
                 end
                 
@@ -80,13 +80,10 @@ classdef robotGUI < handle
                     'Position', [530, 600 - 60*i, 250, 3], ...
                     'ValueChangingFcn', @(src, event)app.jogJointWelder(i, event.Value));
             end
-
-            % Create EStop button
             app.eStopButton = uibutton(app.fig, 'push', 'Text', 'EStop', ...
                 'Position', [20, 50, 100, 40], ...
-                'ButtonPushedFcn', @(~, ~)app.eStop());
+                'ButtonPushedFcn',@(~, ~)app.eStop());
 
-            % Create Resume button
             app.resumeButton = uibutton(app.fig, 'push', 'Text', 'Resume', ...
                 'Position', [140, 50, 100, 40], ...
                 'ButtonPushedFcn', @(~, ~)app.resume(), ...
@@ -95,49 +92,32 @@ classdef robotGUI < handle
         
         function jogJointOmron(app, jointIndex, value)
             % Update the specific Omron joint angle while the slider is moving
-            if ~app.eStopEnabled
-                app.qOmron(jointIndex) = value;
-                app.robotOmron.model.animate(app.qOmron);  % Animate robot directly
-            end
+            app.qOmron(jointIndex) = value;
+            app.robotOmron.model.animate(app.qOmron);  % Animate robot directly
         end
         
         function jogJointWelder(app, jointIndex, value)
             % Update the specific Welder joint angle while the slider is moving
-            if ~app.eStopEnabled
-                app.qWelder(jointIndex) = value;
-                app.robotWelder.model.animate(app.qWelder); % Animate robot directly
-            end
+            app.qWelder(jointIndex) = value;
+            app.robotWelder.model.animate(app.qWelder); % Animate robot directly
         end
     
-        function eStop(app)
-            % Emergency Stop function: disable all sliders and stop robots
-            app.eStopEnabled = true;
-            app.enableSliders(false); % Disable sliders
-            app.eStopButton.Enable = 'off'; % Disable EStop button
-            app.resumeButton.Enable = 'on'; % Enable Resume button
-        end
-
         function resume(app)
-            % Resume function: re-enable all sliders to allow robot jogging
             app.eStopEnabled = false;
-            app.enableSliders(true); % Enable sliders
-            app.eStopButton.Enable = 'on'; % Enable EStop button
-            app.resumeButton.Enable = 'off'; % Disable Resume button
+            app.enableSliders(true);
+            app.eStopButton.Enable = 'on';
+            app.resumeButton.Enable = 'off'; 
         end
         
         function enableSliders(app, enable)
-            % Helper function to enable or disable sliders based on EStop status
             sliderState = 'off';
             if enable
                 sliderState = 'on';
             end
-            % Set state for all Omron and Welder sliders
-            for i = 1:numel(app.slidersOmron)
-                app.slidersOmron(i).Enable = sliderState;
+            for i = 1:numel(app.sliderOmron);
+                app.sliderOmron(i).Enable = sliderState;
             end
             for i = 1:numel(app.slidersWelder)
                 app.slidersWelder(i).Enable = sliderState;
             end
-        end
-    end
 end
