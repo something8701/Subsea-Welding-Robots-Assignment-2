@@ -122,13 +122,27 @@ classdef WelderRobot < RobotBaseClass
                 end
             % Animate movement to pickup zone
             for i = 1:6:steps
-                % Slow it down for testing
-                    % pause(0.1);
                 self.model.animate(qMatrix(i,:));
                 drawnow();
                 pause(0.1);
             end
             pause(0.5);
     end
+    %% Move Welder function - Omron Moves By itself - Using Final Q input
+        function Welder_qMatrix = Omron_Move(self,FinalQ)
+                % 
+                    if nargin < 2
+                        FinalQ = [0 0 0 0 0 0 0];    % Default state
+                    end
+                % Get initial pos
+                    initialq = self.model.getpos;
+                % Calculate using Trapezoidal Velocity Profile
+                    steps = 50;
+                    s = lspb(0,1,steps);
+                    Omron_qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
+                    for i = 1:steps
+                        Omron_qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*FinalQ);
+                    end
+        end
     end
 end
