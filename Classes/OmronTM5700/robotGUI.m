@@ -14,8 +14,8 @@ classdef robotGUI < handle
     
     methods
         function app = robotGUI()
-            global eStopFlag;
-            eStopFlag = false; 
+            global eStopEnabled;
+            eStopEnabled = false; 
 
             % Initialize the OmronTM5700
             oBaseTr = transl(0,0,0.5);                                     % Plots steel plate (Case 2)
@@ -26,7 +26,7 @@ classdef robotGUI < handle
             app.robotWelder = WelderRobot(wBaseTr); % Replace with your Welder robot model
             app.qOmron = zeros(1, app.robotOmron.model.n); % Initialize joint angles for Omron
             app.qWelder = zeros(1, app.robotWelder.model.n); % Initialize joint angles for Welder
-            app.eStopEnabled = false;
+            % app.eStopEnabled = false;
 
             % Create GUI
             app.createGUI();
@@ -118,8 +118,8 @@ classdef robotGUI < handle
     
         function eStop(app)
             % Emergency Stop function: disable all sliders and stop robots
-            global EStopFlag;
-            EStopFlag = true;
+            global eStopEnabled;
+            eStopEnabled = true;
             app.eStopEnabled = true;
             app.enableSliders(false); % Disable sliders
             app.eStopButton.Enable = 'off'; % Disable EStop button
@@ -128,8 +128,8 @@ classdef robotGUI < handle
 
         function resume(app)
             % Resume function: re-enable all sliders to allow robot jogging
-            global EStopFlag;
-            EStopFlag = false;
+            global eStopEnabled;
+            eStopEnabled = false;
             app.eStopEnabled = false;
             app.enableSliders(true); % Enable sliders
             app.eStopButton.Enable = 'on'; % Enable EStop button
