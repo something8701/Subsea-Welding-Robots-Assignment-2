@@ -5,6 +5,9 @@ clc;
 % Close all figures
 close all;
 
+global eStopEnabled;
+eStopEnabled = false;
+
 % Add the directory containing your classes to the MATLAB path
 addpath('Classes');
 addpath('Classes/OmronTM5700');
@@ -30,7 +33,6 @@ feederRobot.model.base = transl(1, 0, 0);  % Move feeder robot to (X=1, Y=-0.5)
 % Create a wrapper object that has a 'robot' property pointing to 'feederRobot.model'
 feederRobotWrapper = struct();
 feederRobotWrapper.robot = feederRobot.model;
-
 % Initialize the welderRS Robot
 welderRobot = WelderRobot();  % Instantiate the welder robot
 % Move the welder robot to a new position
