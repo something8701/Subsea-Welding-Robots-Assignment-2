@@ -71,133 +71,32 @@ classdef OmronTM5700 < RobotBaseClass
             end
             OmronPose = self.model.fkine(q) %#ok<NOPRT,NASGU>
         end
-
-    %% Move Omron function - Face Down Direction
-    function Omron_MoveToCartesian_Down(self,FinalCartesian)
-            % 
-            if nargin < 2
-                FinalCartesian = [-0.5, 0, 0];    % Default state
-            end
-            % Get initial pos
-                initialq = self.model.getpos;
-            % Get final transform
-                finalTr = transl(FinalCartesian) * rpy2tr(0, 180, 180, 'deg');
-            % Use inverse kinematics to find q - joint angles for target coordinates. 
-                finalq = self.model.ikcon(finalTr,initialq);
-            % Calculate using Trapezoidal Velocity Profile
-                steps = 50;
-                s = lspb(0,1,steps);
-                qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
-                for i = 1:steps
-                    qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*finalq);
-                end
-            % Animate movement to pickup zone
-            for i = 1:6:steps
-                % Slow it down for testing
-                    pause(0.1);
-                self.model.animate(qMatrix(i,:));
-                drawnow();
-            end
-            pause(0.5);
-    end
-    %% Move Omron and steel plate move - based on cartesian input (downward orientation)
-    function OmronAndSteel_MoveToCartesian_Down(self,FinalCartesian)
-            % 
-            if nargin < 2
-                FinalCartesian = [-0.5, 0, 0];    % Default state
-            end
-            % Get initial pos
-                initialq = self.model.getpos;
-            % Get final transform
-                finalTr = transl(FinalCartesian) * rpy2tr(0, 180, 180, 'deg');
-            % Use inverse kinematics to find q - joint angles for target coordinates. 
-                finalq = self.model.ikcon(finalTr,initialq);
-            % Calculate using Trapezoidal Velocity Profile
-                steps = 50;
-                s = lspb(0,1,steps);
-                qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
-                for i = 1:steps
-                    qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*finalq);
-                end
-            % Animate movement to pickup zone
-            for i = 1:6:steps
-                % Slow it down for testing
-                    pause(0.1);
-                % Animate
-                    self.model.animate(qMatrix(i,:));
-                % run fkine once and store
-                    % EndEffectorTr = self.model.fkine([qMatrix(i,:)]);
-                    % EndEffectorTr = EndEffectorTr.T;
-                % Move steel to end effector pose
-                    % Place the steel plate at its final position by updating the base transformation
-                    self.steelPlate.brickModel{1}.base = self.model.fkine(self.model.getpos()).T * transl(0, 0, 0.01);
-                    %self.steelPlate.brickModel{1}.animate(0);
-                drawnow();
-            end
-            pause(0.5);
-    end
-    %% Move Omron and steel plate move - based on cartesian input facing wall
-    function OmronAndSteel_MoveToCartesian_Wall(self,FinalCartesian)
-            % 
-            if nargin < 2
-                FinalCartesian = [-0.5, 0, 0];    % Default state
-            end
-            % Get initial pos
-                initialq = self.model.getpos;
-            % Get final transform
-                finalTr = transl(FinalCartesian) * rpy2tr(-90, 0, 0, 'deg');
-            % Use inverse kinematics to find q - joint angles for target coordinates. 
-                finalq = self.model.ikcon(finalTr,initialq);
-            % Calculate using Trapezoidal Velocity Profile
-                steps = 50;
-                s = lspb(0,1,steps);
-                qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
-                for i = 1:steps
-                    qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*finalq);
-                end
-            % Animate movement to pickup zone
-            for i = 1:6:steps
-                % Slow it down for testing
-                    pause(0.1);
-                % Animate
-                    self.model.animate(qMatrix(i,:));
-                % run fkine once and store
-                    % EndEffectorTr = self.model.fkine([qMatrix(i,:)]);
-                    % EndEffectorTr = EndEffectorTr.T;
-                % Move steel to end effector pose
-                    % Place the steel plate at its final position by updating the base transformation
-                    self.steelPlate.brickModel{1}.base = self.model.fkine(self.model.getpos()).T * transl(0, 0, 0.01);
-                    %self.steelPlate.brickModel{1}.animate(0);
-                drawnow();
-            end
-            pause(0.5);
-    end
     %% Move Omron function - Omron Moves By itself - Using Final Q input
-    function OmronMove_FinalQInput(self,FinalQ)
-            % 
-                if nargin < 2
-                    FinalQ = [0 0 0 0 0 0 0];    % Default state
+        function Omron_MoveToq(self,FinalQ)
+                % 
+                    if nargin < 2
+                        FinalQ = [0 0 0 0 0 0 0];    % Default state
+                    end
+                % Get initial pos
+                    initialq = self.model.getpos;
+                % Calculate using Trapezoidal Velocity Profile
+                    steps = 50;
+                    s = lspb(0,1,steps);
+                    qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
+                    for i = 1:steps
+                        qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*FinalQ);
+                    end
+                % Animate movement to pickup zone
+                for i = 1:6:steps
+                    % Slow it down for testing
+                        pause(0.1);
+                    self.model.animate(qMatrix(i,:));
+                    drawnow();
                 end
-            % Get initial pos
-                initialq = self.model.getpos;
-            % Calculate using Trapezoidal Velocity Profile
-                steps = 50;
-                s = lspb(0,1,steps);
-                qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
-                for i = 1:steps
-                    qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*FinalQ);
-                end
-            % Animate movement to pickup zone
-            for i = 1:6:steps
-                % Slow it down for testing
-                    pause(0.1);
-                self.model.animate(qMatrix(i,:));
-                drawnow();
-            end
-            pause(0.5);
-    end
+                pause(0.5);
+        end
     %% Move Omron function - With Steel Plate attached - Using Final Q input
-    function OmronAndSteelMove_FinalQInput(self,FinalQ)
+        function OmronAndSteel_MoveToq(self,FinalQ)
             % In case no argument is given
                 if nargin < 2
                     FinalQ = [0 0 0 0 0 0 0];    % Default state
@@ -226,9 +125,9 @@ classdef OmronTM5700 < RobotBaseClass
                 drawnow();
             end
             pause(0.5);
-    end
+        end
     %% Move Omron function - Facing wall
-        function OmronMoveToCartesian_Wall(self,FinalCartesian)
+        function Omron_MoveToCartesian(self,FinalCartesian,Roll,Pitch,Yaw)
                 % 
                 if nargin < 2
                     FinalCartesian = [-0.5, 0, 0];    % Default state
@@ -236,7 +135,7 @@ classdef OmronTM5700 < RobotBaseClass
                 % Get initial pos
                     initialq = self.model.getpos;
                 % Get final transform
-                    finalTr = transl(FinalCartesian) * rpy2tr(0, -90, -90, 'deg');
+                    finalTr = transl(FinalCartesian) * rpy2tr(Roll, Pitch, Yaw, 'deg');
                 % Use inverse kinematics to find q - joint angles for target coordinates. 
                     finalq = self.model.ikcon(finalTr,initialq);
                 % Calculate using Trapezoidal Velocity Profile
@@ -255,8 +154,43 @@ classdef OmronTM5700 < RobotBaseClass
                 end
                 pause(0.5);
         end
+    %% Move Omron and steel plate move - based on cartesian input (downward orientation)
+        function OmronAndSteel_MoveToCartesian(self,FinalCartesian,Roll,Pitch,Yaw)
+            % 
+            if nargin < 2
+                FinalCartesian = [-0.5, 0, 0];    % Default state
+            end
+            % Get initial pos
+                initialq = self.model.getpos;
+            % Get final transform
+                finalTr = transl(FinalCartesian) * rpy2tr(Roll, Pitch, Yaw, 'deg');
+            % Use inverse kinematics to find q - joint angles for target coordinates. 
+                finalq = self.model.ikcon(finalTr,initialq);
+            % Calculate using Trapezoidal Velocity Profile
+                steps = 50;
+                s = lspb(0,1,steps);
+                qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
+                for i = 1:steps
+                    qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*finalq);
+                end
+            % Animate movement to pickup zone
+            for i = 1:6:steps
+                % Animate
+                    self.model.animate(qMatrix(i,:));
+                % run fkine once and store
+                    % EndEffectorTr = self.model.fkine([qMatrix(i,:)]);
+                    % EndEffectorTr = EndEffectorTr.T;
+                % Move steel to end effector pose
+                    % Place the steel plate at its final position by updating the base transformation
+                    % steelPlate.brickModel{1}.base = self.model.fkine(self.model.getpos()).T * transl(0, 0, 0.01);
+                    %self.steelPlate.brickModel{1}.animate(0);
+                drawnow();
+                pause(0.1);
+            end
+            pause(0.5);
+        end
     %% Move Omron function - Facing wall
-    function OmronMoveBase(self,finalCartesian)
+        function OmronMoveBase(self,finalCartesian)
                 % 
                 if nargin < 2
                     finalCartesian = [0, 0, 0];    % Default base

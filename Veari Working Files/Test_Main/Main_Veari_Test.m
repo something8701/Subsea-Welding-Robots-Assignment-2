@@ -60,8 +60,8 @@
             set(hFig, 'Renderer', 'opengl');
 
 %% Initialise GUI
-    % app = GUI(); 
-    robotGUI();
+    app = GUI(); 
+    % robotGUI();
 
 % Set up callbacks to update robot joint movements
     addlistener(app.Link1, 'ValueChanged', @(src, event) updateJoint(1, app, feederRobotWrapper.robot));
@@ -124,22 +124,24 @@
         % Welder moves out of the way
             welderRobot.WelderMove_FinalQInput([-pi/2 pi/4 pi/4 0 pi/2 0 0]);
         % Omron position to pickup
-            feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 0 0 0]);
-            feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 (-pi/2) 0 0]);
-            feederRobot.Omron_MoveToCartesian_Down([-0.35 0 0.8]);
-            feederRobot.Omron_MoveToCartesian_Down([-0.35 0 0.5]);
+            feederRobot.Omron_MoveToq([pi/2 0 0 0 0 0 0]);
+            feederRobot.Omron_MoveToq([pi/2 0 0 0 (-pi/2) 0 0]);
+            feederRobot.Omron_MoveToCartesian([-0.35 0 0.8],0,180,180);
+            feederRobot.Omron_MoveToCartesian([-0.35 0 0.5],0,180,180);
         % Omron Picksup steel plate then moves to default position
-            feederRobot.OmronAndSteel_MoveToCartesian_Down([-0.35 0 0.8]);
-            feederRobot.OmronAndSteelMove_FinalQInput([pi/2 0 0 0 (-pi/2) 0 0]);
-            feederRobot.OmronAndSteelMove_FinalQInput([0 0 0 0 (-pi/2) 0 0]);
+            feederRobot.OmronAndSteel_MoveToCartesian([-0.35 0 0.8],0,180,180);
+            feederRobot.OmronAndSteel_MoveToq([pi/2 0 0 0 (-pi/2) 0 0]);
+            feederRobot.OmronAndSteel_MoveToq([(-pi/2) 0 0 0 (-pi/2) 0 0]);
+            feederRobot.OmronAndSteel_MoveToq([(-pi/2) 0 (-pi/4) 0 0 0 0]);
         % Omron Moves steel plate to wall
-            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0.15 0.35 1.3]);
-            feederRobot.OmronAndSteel_MoveToCartesian_Wall([0.15 0.45 1.3]);
+            feederRobot.OmronAndSteel_MoveToCartesian([0.15 0.35 1.3],0,-90,-90);
+            feederRobot.OmronAndSteel_MoveToCartesian([0.15 0.45 1.3],0,-90,-90);
         % Omron Move Omron away for welding to occur
-            feederRobot.OmronMoveBase([0,-0.35,0.5]);
-            feederRobot.OmronMove_FinalQInput([-pi/2 0 0 0 0 0 0]);
-            feederRobot.OmronMove_FinalQInput([pi/2 0 0 0 (-pi/2) 0 0]);
-            feederRobot.OmronMove_FinalQInput([(pi/2) deg2rad(80) 0 0 (-pi/2) 0 0]);
+            feederRobot.Omron_MoveToCartesian([0.15 0.35 1.3],0,-90,-90);
+            feederRobot.OmronMoveBase([0,-0.4,0.5]);
+            feederRobot.Omron_MoveToq([-pi/2 0 0 0 0 0 0]);
+            feederRobot.Omron_MoveToq([pi/2 0 0 0 (-pi/2) 0 0]);
+            feederRobot.Omron_MoveToq([(pi/2) deg2rad(80) 0 0 (-pi/2) 0 0]);
         % Welder does welding
                 welderRobot.WelderMove_FinalQInput([0 0 0 0 0 0 0]);
                 welderRobot.WelderMove_FinalQInput([0 deg2rad(-45) deg2rad(-45) 0 0 0 0]);
@@ -149,7 +151,7 @@
                 welderRobot.WelderMoveToCartesian([WeldLocations(i,:)],90,0,180);
             end
             % Welder returns to default
-                welderRobot.WelderMove_FinalQInput([0 0 0 0 pi/2 0 0]);
+                welderRobot.WelderMove_FinalQInput([0 deg2rad(-45) deg2rad(-45) 0 pi/2 0 0]);
                 welderRobot.WelderMove_FinalQInput([0 0 0 0 0 0 0]);
 
 %% Loop to allow user input for redo

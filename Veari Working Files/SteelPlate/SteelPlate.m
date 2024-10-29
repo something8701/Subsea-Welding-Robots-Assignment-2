@@ -47,7 +47,6 @@ classdef SteelPlate < handle
                 end
             end
         end
-
         %% Destructor method to clean up brick models
         % function delete(self)
         %     % Delete function removes all bricks from the scene when the object is destroyed
