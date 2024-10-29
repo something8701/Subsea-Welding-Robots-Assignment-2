@@ -25,7 +25,7 @@ classdef OmronTM5700 < RobotBaseClass
                 end
 
             % Teach() can be used to interact with OmronTM5
-                self.model.teach();
+                % self.model.teach();
         end
 
 %% Create the robot model

@@ -64,48 +64,48 @@
             set(hFig, 'Renderer', 'opengl');
 
 %% Initialise GUI
-    % app = GUI(); 
-    robotGUI();
+    app = GUI(); 
+    % robotGUI();
 
-% % Set up callbacks to update robot joint movements
-%     addlistener(app.Link1, 'ValueChanged', @(src, event) updateJoint(1, app, feederRobotWrapper.robot));
-%     addlistener(app.Link2, 'ValueChanged', @(src, event) updateJoint(2, app, feederRobotWrapper.robot));
-%     addlistener(app.Link3, 'ValueChanged', @(src, event) updateJoint(3, app, feederRobotWrapper.robot));
-%     addlistener(app.Link4, 'ValueChanged', @(src, event) updateJoint(4, app, feederRobotWrapper.robot));
-%     addlistener(app.Link5, 'ValueChanged', @(src, event) updateJoint(5, app, feederRobotWrapper.robot));
-% 
-% % Function to update robot joints
-%     function updateJoint(jointNum, app, robot)
-%         % Update the robot joint angle based on the slider value
-%         qRobot(jointNum) = app.(['Link', num2str(jointNum)]).Value;  % Get slider value
-%         robot.animate(qRobot);  % Update robot pose
-%     end
-% 
-% % Handle Cartesian movements (X, Y, Z inputs)
-%     addlistener(app.X, 'ValueChanged', @(src, event) updateCartesian(app, feederRobotWrapper.robot));
-%     addlistener(app.Y, 'ValueChanged', @(src, event) updateCartesian(app, feederRobotWrapper.robot));
-%     addlistener(app.Z, 'ValueChanged', @(src, event) updateCartesian(app, feederRobotWrapper.robot));
-% 
-% % Function to update robot based on XYZ inputs (inverse kinematics)
-%     function updateCartesian(app, robot)
-%         % Get the desired Cartesian position from the GUI inputs
-%         x = app.X.Value;
-%         y = app.Y.Value;
-%         z = app.Z.Value;
-% 
-%         % Compute the target transformation matrix
-%         T = transl([x, y, z]);
-% 
-%         % Solve for joint angles using inverse kinematics
-%         qSol = robot.ikcon(T, robot.getpos());
-% 
-%         % If a valid solution is found, update the robot configuration
-%         if ~isempty(qSol)
-%             robot.animate(qSol);
-%         else
-%             disp('No valid IK solution found');
-%         end
-%     end
+% Set up callbacks to update robot joint movements
+    addlistener(app.Link1, 'ValueChanged', @(src, event) updateJoint(1, app, feederRobotWrapper.robot));
+    addlistener(app.Link2, 'ValueChanged', @(src, event) updateJoint(2, app, feederRobotWrapper.robot));
+    addlistener(app.Link3, 'ValueChanged', @(src, event) updateJoint(3, app, feederRobotWrapper.robot));
+    addlistener(app.Link4, 'ValueChanged', @(src, event) updateJoint(4, app, feederRobotWrapper.robot));
+    addlistener(app.Link5, 'ValueChanged', @(src, event) updateJoint(5, app, feederRobotWrapper.robot));
+
+% Function to update robot joints
+    function updateJoint(jointNum, app, robot)
+        % Update the robot joint angle based on the slider value
+        qRobot(jointNum) = app.(['Link', num2str(jointNum)]).Value;  % Get slider value
+        robot.animate(qRobot);  % Update robot pose
+    end
+
+% Handle Cartesian movements (X, Y, Z inputs)
+    addlistener(app.X, 'ValueChanged', @(src, event) updateCartesian(app, feederRobotWrapper.robot));
+    addlistener(app.Y, 'ValueChanged', @(src, event) updateCartesian(app, feederRobotWrapper.robot));
+    addlistener(app.Z, 'ValueChanged', @(src, event) updateCartesian(app, feederRobotWrapper.robot));
+
+% Function to update robot based on XYZ inputs (inverse kinematics)
+    function updateCartesian(app, robot)
+        % Get the desired Cartesian position from the GUI inputs
+        x = app.X.Value;
+        y = app.Y.Value;
+        z = app.Z.Value;
+    
+        % Compute the target transformation matrix
+        T = transl([x, y, z]);
+    
+        % Solve for joint angles using inverse kinematics
+        qSol = robot.ikcon(T, robot.getpos());
+    
+        % If a valid solution is found, update the robot configuration
+        if ~isempty(qSol)
+            robot.animate(qSol);
+        else
+            disp('No valid IK solution found');
+        end
+    end
 
 %% Create markings for weld locations
     WeldLocations = [   -0.05 0.25 1.4;      % Before start of weld
@@ -170,14 +170,14 @@
                 welderRobot.WelderMove_FinalQInput([0 0 0 0 0 0 0]);
 
 %% Loop to allow user input for redo
-    while true
-        userInput = input('Type "redo" to repeat the movement, or "exit" to quit: ', 's');
-        if strcmp(userInput, 'redo')
-            % Move robots again with the same movement
-            feederRobot.Omron_MoveToq([pi/2 0 0 0 0 (pi/2) 0]);
-        elseif strcmp(userInput, 'exit')
-            break;
-        else
-            disp('Invalid input. Please type "redo" or "exit".');
-        end
-    end
+    % while true
+    %     userInput = input('Type "redo" to repeat the movement, or "exit" to quit: ', 's');
+    %     if strcmp(userInput, 'redo')
+    %         % Move robots again with the same movement
+    %         movement.moveStraightLine(startPoint, endPoint, delayPerStep);
+    %     elseif strcmp(userInput, 'exit')
+    %         break;
+    %     else
+    %         disp('Invalid input. Please type "redo" or "exit".');
+    %     end
+    % end

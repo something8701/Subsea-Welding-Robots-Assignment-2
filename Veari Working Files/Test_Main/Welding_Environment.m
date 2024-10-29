@@ -56,6 +56,7 @@ classdef Welding_Environment < handle
             self.loadAndPlotColumn(hAxes);      % Column
             self.loadAndPlotFish(hAxes);        % Fish
             self.loadAndPlotCoral(hAxes);       % Coral
+            self.loadAndPlotFences(hAxes);
         end
         
         % Method to plot the environment (floor and walls)
@@ -140,6 +141,35 @@ classdef Welding_Environment < handle
                 camlight('headlight');
                 lighting gouraud;
                 material dull;
+        end
+
+        % Method to load and plot fences
+        function loadAndPlotFences(self, hAxes)
+            % Fence 1 (along the x-axis, positive side)
+            h_1 = PlaceObject('Data/fence.ply', [2, 0, 0]); 
+            verts = [get(h_1, 'Vertices'), ones(size(get(h_1, 'Vertices'), 1), 1)] * trotz(pi/2); % Rotate fence 90 degrees
+            verts(:, 1) = verts(:, 1) * 8; % Adjust scaling
+            set(h_1, 'Vertices', verts(:, 1:3));
+        
+            % Fence 2 (along the x-axis, negative side)
+            h_2 = PlaceObject('Data/fence.ply', [-2, 0, 0]);
+            verts = [get(h_2, 'Vertices'), ones(size(get(h_2, 'Vertices'), 1), 1)] * trotz(pi/2);   
+            verts(:, 1) = verts(:, 1) * 8; 
+            set(h_2, 'Vertices', verts(:, 1:3));
+        
+            % Fence 3 (along the y-axis, positive side)
+            h_3 = PlaceObject('Data/fence.ply', [0, 0, 0]);
+            verts = [get(h_3, 'Vertices'), ones(size(get(h_3, 'Vertices'), 1), 1)];
+            verts(:, 2) = verts(:, 2) * 8; % Adjust scaling
+            verts(:, 1) = verts(:, 1) + 2; % Align with concrete corner
+            set(h_3, 'Vertices', verts(:, 1:3));
+        
+            % Fence 4 (along the y-axis, negative side)
+            h_4 = PlaceObject('Data/fence.ply', [0, 0, 0]);
+            verts = [get(h_4, 'Vertices'), ones(size(get(h_4, 'Vertices'), 1), 1)];
+            verts(:, 2) = verts(:, 2) * 8; % Adjust scaling
+            verts(:, 1) = verts(:, 1) - 2; % Align with concrete corner
+            set(h_4, 'Vertices', verts(:, 1:3));
         end
         
         % Method to load and plot the fish models
