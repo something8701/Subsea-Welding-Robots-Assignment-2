@@ -24,11 +24,11 @@
         Plate = PlaceObject('SteelPlate.PLY',[-0.35,0,0.5]);
         verts = [get(Plate,'Vertices'), ones(size(get(Plate,'Vertices'),1),1)];
         set(Plate,'Vertices',verts(:,1:3))
-    % Place Plate
+    % Place Stop Button
         Stop = PlaceObject('StopButton.ply',[0.3,-0.5,0.5]);
         verts = [get(Stop,'Vertices'), ones(size(get(Stop,'Vertices'),1),1)];
         set(Stop,'Vertices',verts(:,1:3))
-    % Place Plate
+    % Place Stop Button
         Stop = PlaceObject('StopButton.ply',[-2.5,-2.5,0]);
         verts = [get(Stop,'Vertices'), ones(size(get(Stop,'Vertices'),1),1)];
         set(Stop,'Vertices',verts(:,1:3))

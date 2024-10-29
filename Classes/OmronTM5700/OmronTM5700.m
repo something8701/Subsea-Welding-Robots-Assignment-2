@@ -272,5 +272,21 @@ classdef OmronTM5700 < RobotBaseClass
                 end
                 pause(0.5);
         end
+        %% Move Omron function - Omron Moves By itself - Using Final Q input
+        function Omron_qMatrix = Omron_Move(self,FinalQ)
+                % 
+                    if nargin < 2
+                        FinalQ = [0 0 0 0 0 0 0];    % Default state
+                    end
+                % Get initial pos
+                    initialq = self.model.getpos;
+                % Calculate using Trapezoidal Velocity Profile
+                    steps = 50;
+                    s = lspb(0,1,steps);
+                    Omron_qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
+                    for i = 1:steps
+                        Omron_qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*FinalQ);
+                    end
+        end
     end
 end
