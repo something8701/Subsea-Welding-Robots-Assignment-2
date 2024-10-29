@@ -57,6 +57,7 @@ classdef Environment < handle
             self.loadAndPlotFish(hAxes);        % Fish
             self.loadAndPlotCoral(hAxes);       % Coral
             self.loadAndPlotFences(hAxes);
+            % self.loadAndPlotSubmarine(hAxes);
         end
         
         % Method to plot the environment (floor and walls)
@@ -246,6 +247,23 @@ classdef Environment < handle
             
             trisurf(faces2, vertices2(:, 1), vertices2(:, 2), vertices2(:, 3), ...
                 'FaceColor', [0.8, 0.5, 0.3], 'EdgeColor', 'none', 'Parent', hAxes);
+
+        % % Method to load and plot the submarine
+        % function loadAndPlotSubmarine(self, hAxes)
+        %     % Load the submarine PLY file as a triangulated surface
+        %     [faces, vertices, ~] = plyread('Data/submarine.ply', 'tri');
+        % 
+        %     % Apply a scaling factor to the submarine
+        %     scalingFactor = 0.00006;  % Adjust this value to make the submarine smaller or larger
+        %     vertices = vertices * scalingFactor;
+        % 
+        %     % Position the submarine under the robots (on the floor)
+        %     translationVector = [-1.8, 0, 0];  % Adjust Z-axis to sit on the floor as needed
+        %     vertices = vertices + translationVector;
+        % 
+        %     % Plot the submarine model
+        %     trisurf(faces, vertices(:, 1), vertices(:, 2), vertices(:, 3), ...
+        %         'FaceColor', [0.3, 0.3, 0.8], 'EdgeColor', 'none', 'Parent', hAxes);
             
             % Adjust appearance
             camlight('headlight');
