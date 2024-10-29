@@ -177,7 +177,8 @@
             % Welder returns to default
                 welderRobot.WelderMove_FinalQInput([0 deg2rad(-45) deg2rad(-45) 0 pi/2 0 0]);
                 welderRobot.WelderMove_FinalQInput([0 0 0 0 0 0 0]);
-
+            feederRobot.Omron_MoveToq([0 0 0 0 0 0 0]);
+            feederRobot.OmronMoveBase([0,0,0.5]);
 %% Loop to allow user input for redo
     while true
         userInput = input('Type "redo" to repeat the movement, or "exit" to quit: ', 's');
