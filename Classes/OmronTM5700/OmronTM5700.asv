@@ -2,7 +2,7 @@ classdef OmronTM5700 < RobotBaseClass
     %% OmronTM5700
     properties(Access = public)              
         plyFileNameStem = 'OmronTM5700';
-        steelPlate = SteelPlate(1, -0.35, 0, 0.5);
+        steelPlate = SteelPlate(1, -0.35, 0.1, 0.5);
     end
     
     methods
@@ -19,9 +19,9 @@ classdef OmronTM5700 < RobotBaseClass
             self.PlotAndColourRobot();  
             % This is for testing - only generates Steel Plate
                 if Case == 2
-                    % steelPlate = SteelPlate(1, -0.35, 0, 0.5);
-                    % startTr = transl(-0.35, 0, 0.5);
-                    % self.steelPlate.moveSteelPlate(startTr);
+                    steelPlate = SteelPlate(1, -0.35, 0, 0.5);
+                    
+                    self.steelPlate.moveSteelPlate(EndEffectorTr);
                 end
 
             % Teach() can be used to interact with OmronTM5

@@ -82,7 +82,7 @@ classdef WelderRobot < RobotBaseClass
             % Get initial pose
                 initialq = self.model.getpos;
             % Get final transform
-                finalTr = transl(Cartesian) * rpy2tr(Roll, Pitch, Yaw, 'deg');   % Note: 90, 0, 180 Faces positive Y direction
+                % finalTr = transl(Cartesian) * rpy2tr(Roll, Pitch, Yaw, 'deg');   % Note: 90, 0, 180 Faces positive Y direction
 
             % Calculate the straight-line path in Cartesian space
                 steps = 15;
@@ -94,13 +94,14 @@ classdef WelderRobot < RobotBaseClass
                         cartesianPath(i, :) = cartesianPoint;
                     end
             % Display movement to final position
-                for i = 1:steps
+                for i = 2:steps
+                    % Get initial pose
+                        initialq = self.model.getpos;
                     % Get the joint angles corresponding to the current Cartesian position
-                        currentTr = transl(cartesianPath(i, :)) * rpy2tr(Roll, Pitch, Yaw, 'deg');
-                        currentq = self.model.ikcon(currentTr, initialq);
-                    self.model.animate(currentq);
+                        desiredTr = transl(cartesianPath(i, :)) * rpy2tr(Roll, Pitch, Yaw, 'deg');
+                        desiredq = self.model.ikcon(desiredTr, initialq);
+                    self.model.animate(desiredq);
                     drawnow();
-                    % Slow it down
                 end
             pause(0.5);
     end
@@ -121,10 +122,9 @@ classdef WelderRobot < RobotBaseClass
                 end
             % Animate movement to pickup zone
             for i = 1:6:steps
-                % Slow it down for testing
-                    % pause(0.1);
                 self.model.animate(qMatrix(i,:));
                 drawnow();
+                pause(0.1);
             end
             pause(0.5);
     end

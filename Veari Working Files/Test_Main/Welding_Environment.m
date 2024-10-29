@@ -1,4 +1,4 @@
-classdef Environment_Veari_Test < handle
+classdef Welding_Environment < handle
     properties
         NX           % Size in X direction
         NY           % Size in Y direction
@@ -16,7 +16,7 @@ classdef Environment_Veari_Test < handle
     
     methods
         % Constructor for the Environment class
-        function self = Environment_Veari_Test(NX, NY, NZ)
+        function self = Welding_Environment(NX, NY, NZ)
             if nargin < 1
                 NX = 5; % Default size
             end
@@ -129,7 +129,7 @@ classdef Environment_Veari_Test < handle
             vertices = (rotationMatrix * vertices')';  % Apply rotation to vertices
             
             % Translate the column
-            translationVector = [0, 0.7, 0]; 
+            translationVector = [0, 0.727, 0]; 
             vertices = vertices + translationVector;  % Apply translation
             
             % Plot the column model using trisurf

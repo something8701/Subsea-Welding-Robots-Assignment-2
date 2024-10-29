@@ -15,7 +15,7 @@ classdef WelderRobot < RobotBaseClass
             self.PlotAndColourRobot();  
             
             % Teach() can be used to interact with Welder Robot
-                %self.model.teach();
+                % self.model.teach();
         end
 
 %% Create the robot model
@@ -82,10 +82,10 @@ classdef WelderRobot < RobotBaseClass
             % Get initial pose
                 initialq = self.model.getpos;
             % Get final transform
-                finalTr = transl(Cartesian) * rpy2tr(Roll, Pitch, Yaw, 'deg');   % Note: 90, 0, 180 Faces positive Y direction
+                % finalTr = transl(Cartesian) * rpy2tr(Roll, Pitch, Yaw, 'deg');   % Note: 90, 0, 180 Faces positive Y direction
 
             % Calculate the straight-line path in Cartesian space
-                steps = 20;
+                steps = 15;
                 s = linspace(0, 1, steps);                      % Linear space for interpolation
                 cartesianPath = nan(steps, 3);                  % Initialise path matrix
                 % Calculate intermediate points along straight line
@@ -94,31 +94,16 @@ classdef WelderRobot < RobotBaseClass
                         cartesianPath(i, :) = cartesianPoint;
                     end
             % Display movement to final position
-                for i = 1:steps
+                for i = 2:steps
+                    % Get initial pose
+                        initialq = self.model.getpos;
                     % Get the joint angles corresponding to the current Cartesian position
-                        currentTr = transl(cartesianPath(i, :)) * rpy2tr(0, 180, 180, 'deg');
-                        currentq = self.model.ikcon(currentTr, initialq);
-            
-                    % Slow it down for testing
-                        pause(0.1);
-                    self.model.animate(currentq);
+                        desiredTr = transl(cartesianPath(i, :)) * rpy2tr(Roll, Pitch, Yaw, 'deg');
+                        desiredq = self.model.ikcon(desiredTr, initialq);
+                    self.model.animate(desiredq);
                     drawnow();
                 end
-            % % Use inverse kinematics to find q - joint angles for target coordinates. 
-            %     finalq = self.model.ikcon(finalTr,initialq);
-            % % Calculate using Trapezoidal Velocity Profile
-            %     s = lspb(0,1,steps);
-            %     qMatrix = nan(steps, 7);        % 50 by 7 matrix with NaN
-            %     for i = 1:steps
-            %         qMatrix(i,:) = ((1-s(i))*initialq) + (s(i)*finalq);
-            %     end
-            % % Animate movement to pickup zone
-            % for i = 1:10:steps
-            %     % Slow it down for testing
-            %         pause(0.1);
-            %     self.model.animate(qMatrix(i,:));
-            %     drawnow();
-            % end
+            pause(0.5);
     end
     %% Move Welder function - Welder Moves By itself - Using Final Q input
     function WelderMove_FinalQInput(self,FinalQ)
@@ -138,10 +123,12 @@ classdef WelderRobot < RobotBaseClass
             % Animate movement to pickup zone
             for i = 1:6:steps
                 % Slow it down for testing
-                    pause(0.1);
+                    % pause(0.1);
                 self.model.animate(qMatrix(i,:));
                 drawnow();
+                pause(0.1);
             end
+            pause(0.5);
     end
     end
 end
