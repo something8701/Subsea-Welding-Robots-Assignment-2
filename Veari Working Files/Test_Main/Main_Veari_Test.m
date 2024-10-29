@@ -16,6 +16,11 @@
     % Plot the environment
         env.plotEnvironment(gca);
 
+    % Place ROV
+        ROV = PlaceObject('ROV.PLY',[-0.5,-1.5,0]);
+        verts = [get(ROV,'Vertices'), ones(size(get(ROV,'Vertices'),1),1)];
+        set(ROV,'Vertices',verts(:,1:3))
+
 %% Initialize and Plot Robots
     % Initialize the OmronTM5700
         feederRobot = OmronTM5700([eye(4)],2);    % Instantiate the feeder robot - At origin
