@@ -4,7 +4,7 @@
         clc;
     % Close all figures
         close all;
-    
+
     % Add the directory containing your classes to the MATLAB path
         addpath('Classes');
         addpath('Classes/OmronTM5700');
