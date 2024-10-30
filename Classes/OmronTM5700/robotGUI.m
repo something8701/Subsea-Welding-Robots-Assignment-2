@@ -1,64 +1,55 @@
 classdef robotGUI < handle
     properties
-        fig           % Main GUI figure
-        slidersOmron  % Array of sliders for Omron robot control
-        slidersWelder % Array of sliders for Welder robot control
-        robotOmron    % Omron robot model
-        robotWelder   % Welder robot model
-        qOmron        % Joint configuration for Omron robot
-        qWelder       % Joint configuration for Welder robot
-        eStopEnabled  % Tracks if EStop is enabled
-        resumeButton  % Resume button
-        eStopButton   % EStop button
+        fig             % Main GUI figure
+        slidersOmron    % Array of sliders for Omron robot control
+        slidersWelder   % Array of sliders for Welder robot control
+        robotOmron      % Omron robot model
+        robotWelder     % Welder robot model
+        qOmron          % Joint configuration for Omron robot
+        qWelder         % Joint configuration for Welder robot
+        eStopEnabled    % Tracks if EStop is enabled
+        resumeButton    % Resume button
+        eStopButton     % EStop button
+        poseTextArea    % Text area to display joint positions
     end
     
     methods
         function app = robotGUI()
             global eStopEnabled;
-            eStopEnabled = false; 
+            eStopEnabled = false;
 
-            % Initialize the OmronTM5700
-            oBaseTr = transl(0,0,0.5);                                     % Plots steel plate (Case 2)
-            % Initialize the welderRS Robot
+            % Initialize robots (comment out SteelPlate if it's non-essential)
+            oBaseTr = transl(0,0,0.5);      
             wBaseTr = transl(0.3,0,0.5);
-            % Initialize the robots
-            app.robotOmron = OmronTM5700(oBaseTr,2);  % Replace with your Omron robot model
-            app.robotWelder = WelderRobot(wBaseTr); % Replace with your Welder robot model
-            app.qOmron = zeros(1, app.robotOmron.model.n); % Initialize joint angles for Omron
-            app.qWelder = zeros(1, app.robotWelder.model.n); % Initialize joint angles for Welder
-            % app.eStopEnabled = false;
+            app.robotOmron = OmronTM5700(oBaseTr,2);  
+            app.robotWelder = WelderRobot(wBaseTr);   
+            app.qOmron = zeros(1, app.robotOmron.model.n); 
+            app.qWelder = zeros(1, app.robotWelder.model.n);
 
             % Create GUI
             app.createGUI();
             
-            % Set initial robot positions in the existing environment
+            % Set initial robot positions
             app.robotOmron.model.animate(app.qOmron);
             app.robotWelder.model.animate(app.qWelder);
+            app.updatePoseDisplay(); % Initialize pose display
         end
         
         function createGUI(app)
-            % Create the main figure window
-            app.fig = uifigure('Name', 'Robot GUI', 'Position', [100, 100, 800, 600]);
-            
-            % Define slider limits based on joint limits for each robot
-            jointLimitsOmron = app.robotOmron.model.qlim;
-            jointLimitsWelder = app.robotWelder.model.qlim;
-            
-            % Create sliders for each joint in Omron robot
+            % Main figure window
+            app.fig = uifigure('Name', 'Robot GUI', 'Position', [100, 100, 900, 600]);
+
+            % Define joint limits with defaults if undefined
+            jointLimitsOmron = app.getJointLimits(app.robotOmron.model.qlim, app.robotOmron.model.n);
+            jointLimitsWelder = app.getJointLimits(app.robotWelder.model.qlim, app.robotWelder.model.n);
+
+            % Create sliders for Omron joints
             numJointsOmron = app.robotOmron.model.n;
-            app.slidersOmron = gobjects(1, numJointsOmron); % Preallocate slider array
-            
+            app.slidersOmron = gobjects(1, numJointsOmron);
             for i = 1:numJointsOmron
-                % Label for each Omron joint
                 uilabel(app.fig, 'Text', sprintf('Omron Joint %d', i), ...
                     'Position', [20, 600 - 60*i, 100, 22]);
                 
-                % Ensure joint limits are valid for Omron
-                if ~isfinite(jointLimitsOmron(i, 1)) || ~isfinite(jointLimitsOmron(i, 2)) || jointLimitsOmron(i, 1) >= jointLimitsOmron(i, 2)
-                    jointLimitsOmron(i, :) = [-pi, pi]; % Default limits if invalid
-                end
-                
-                % Slider for each Omron joint with jog functionality
                 app.slidersOmron(i) = uislider(app.fig, ...
                     'Limits', jointLimitsOmron(i, :), ...
                     'Value', app.qOmron(i), ...
@@ -66,21 +57,13 @@ classdef robotGUI < handle
                     'ValueChangingFcn', @(src, event)app.jogJointOmron(i, event.Value));
             end
             
-            % Create sliders for each joint in Welder robot
+            % Create sliders for Welder joints
             numJointsWelder = app.robotWelder.model.n;
-            app.slidersWelder = gobjects(1, numJointsWelder); % Preallocate slider array
-            
+            app.slidersWelder = gobjects(1, numJointsWelder);
             for i = 1:numJointsWelder
-                % Label for each Welder joint
                 uilabel(app.fig, 'Text', sprintf('Welder Joint %d', i), ...
                     'Position', [420, 600 - 60*i, 100, 22]);
                 
-                % Ensure joint limits are valid for Welder
-                if ~isfinite(jointLimitsWelder(i, 1)) || ~isfinite(jointLimitsWelder(i, 2)) || jointLimitsWelder(i, 1) >= jointLimitsWelder(i, 2)
-                    jointLimitsWelder(i, :) = [-pi, pi]; % Default limits if invalid
-                end
-                
-                % Slider for each Welder joint with jog functionality
                 app.slidersWelder(i) = uislider(app.fig, ...
                     'Limits', jointLimitsWelder(i, :), ...
                     'Value', app.qWelder(i), ...
@@ -88,67 +71,99 @@ classdef robotGUI < handle
                     'ValueChangingFcn', @(src, event)app.jogJointWelder(i, event.Value));
             end
 
-            % Create EStop button
+            % EStop and Resume buttons
             app.eStopButton = uibutton(app.fig, 'push', 'Text', 'EStop', ...
                 'Position', [20, 50, 100, 40], ...
                 'ButtonPushedFcn', @(~, ~)app.eStop());
-
-            % Create Resume button
             app.resumeButton = uibutton(app.fig, 'push', 'Text', 'Resume', ...
                 'Position', [140, 50, 100, 40], ...
                 'ButtonPushedFcn', @(~, ~)app.resume(), ...
-                'Enable', 'off'); % Initially disabled        
+                'Enable', 'off'); % Initially disabled 
+
+            % Text area for real-time pose display
+            app.poseTextArea = uitextarea(app.fig, 'Position', [800, 150, 150, 300], ...
+                'Editable', 'off', 'Value', {'Robot Pose Info'});
+        end
+        
+        function jointLimits = getJointLimits(~, qlim, numJoints)
+            % Helper to return valid joint limits or default to [-pi, pi]
+            jointLimits = repmat([-pi, pi], numJoints, 1);  % Default limits
+            for i = 1:numJoints
+                if size(qlim, 2) == 2 && all(isfinite(qlim(i, :))) && qlim(i, 1) < qlim(i, 2)
+                    jointLimits(i, :) = qlim(i, :);  % Use defined limits if valid
+                end
+            end
         end
         
         function jogJointOmron(app, jointIndex, value)
-            % Update the specific Omron joint angle while the slider is moving
-            if ~app.eStopEnabled
-                app.qOmron(jointIndex) = value;
-                app.robotOmron.model.animate(app.qOmron);  % Animate robot directly
-            end
+            % Update Omron joint angle and pose display
+            app.qOmron(jointIndex) = value;
+            app.robotOmron.model.animate(app.qOmron);  
+            app.updatePoseDisplay();
         end
         
         function jogJointWelder(app, jointIndex, value)
-            % Update the specific Welder joint angle while the slider is moving
-            if ~app.eStopEnabled
-                app.qWelder(jointIndex) = value;
-                app.robotWelder.model.animate(app.qWelder); % Animate robot directly
-            end
+            % Update Welder joint angle and pose display
+            app.qWelder(jointIndex) = value;
+            app.robotWelder.model.animate(app.qWelder);  
+            app.updatePoseDisplay();
         end
     
         function eStop(app)
-            % Emergency Stop function: disable all sliders and stop robots
+            % Emergency Stop
             global eStopEnabled;
             eStopEnabled = true;
             app.eStopEnabled = true;
-            app.enableSliders(false); % Disable sliders
-            app.eStopButton.Enable = 'off'; % Disable EStop button
-            app.resumeButton.Enable = 'on'; % Enable Resume button
+            app.enableSliders(false); 
+            app.eStopButton.Enable = 'off';
+            app.resumeButton.Enable = 'on';
         end
 
         function resume(app)
-            % Resume function: re-enable all sliders to allow robot jogging
+            % Resume operation
             global eStopEnabled;
             eStopEnabled = false;
             app.eStopEnabled = false;
-            app.enableSliders(true); % Enable sliders
-            app.eStopButton.Enable = 'on'; % Enable EStop button
-            app.resumeButton.Enable = 'off'; % Disable Resume button
+            app.enableSliders(true);
+            app.eStopButton.Enable = 'on'; 
+            app.resumeButton.Enable = 'off'; 
         end
         
         function enableSliders(app, enable)
-            % Helper function to enable or disable sliders based on EStop status
+            % Enable or disable sliders
             sliderState = 'off';
             if enable
                 sliderState = 'on';
             end
-            % Set state for all Omron and Welder sliders
             for i = 1:numel(app.slidersOmron)
                 app.slidersOmron(i).Enable = sliderState;
             end
             for i = 1:numel(app.slidersWelder)
                 app.slidersWelder(i).Enable = sliderState;
             end
+        end
+        
+        function updatePoseDisplay(app)
+            % Display the current joint angles for Omron and Welder robots
+            poseText = {
+                'Omron Joint Angles:', ...
+                sprintf('J1: %.2f', app.qOmron(1)), ...
+                sprintf('J2: %.2f', app.qOmron(2)), ...
+                sprintf('J3: %.2f', app.qOmron(3)), ...
+                sprintf('J4: %.2f', app.qOmron(4)), ...
+                sprintf('J5: %.2f', app.qOmron(5)), ...
+                sprintf('J6: %.2f', app.qOmron(6)), ...
+                '', 'Welder Joint Angles:', ...
+                sprintf('J1: %.2f', app.qWelder(1)), ...
+                sprintf('J2: %.2f', app.qWelder(2)), ...
+                sprintf('J3: %.2f', app.qWelder(3)), ...
+                sprintf('J4: %.2f', app.qWelder(4)), ...
+                sprintf('J5: %.2f', app.qWelder(5)), ...
+                sprintf('J6: %.2f', app.qWelder(6))
+            };
+            
+            % Update text area
+            app.poseTextArea.Value = poseText;
         end
     end
 end
