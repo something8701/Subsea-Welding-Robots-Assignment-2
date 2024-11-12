@@ -1,5 +1,8 @@
 classdef WelderRobot_V2 < RobotBaseClass
-    %% WelderRobot
+    %% Welder robot class
+    % This class creates a welder robot with a welding end 
+    % effector. Constructor creates the robot arm at a given base
+    % transform. 
     properties(Access = public)              
         plyFileNameStem = 'WelderRobot';
     end
@@ -63,41 +66,6 @@ classdef WelderRobot_V2 < RobotBaseClass
             end
             WelderPose = self.model.fkine(q);
         end
-
-    %% Move welder robot end effector to specific cartesian in straight line
-    function WelderMoveToCartesian(self,Final_Cart,Roll,Pitch,Yaw)
-            % Ensure values are provided
-                if nargin < 2
-                    Final_Cart = [-0.5, 0, 0];    % Default state
-                end
-                if nargin < 3
-                    Roll = 90;
-                end
-                if nargin < 4
-                    Pitch = 0;
-                end
-                if nargin < 5
-                    Yaw = 180;
-                end
-            % Steps
-                Steps = 30; 
-            % Get final transform
-                % finalTr = transl(Cartesian) * rpy2tr(Roll, Pitch, Yaw, 'deg');   % Note: 90, 0, 180 Faces positive Y direction
-            % Calculate the straight-line path in Cartesian space
-                CartesianMatrix = TVP_Cartesian_Robot(self, Steps, 3, Final_Cart); 
-            % Display movement to final position
-                for i = 2:Steps
-                    % Get initial pose
-                        initialq = self.model.getpos;
-                    % Get the joint angles corresponding to the current Cartesian position
-                        desiredTr = transl(CartesianMatrix(i, :)) * rpy2tr(Roll, Pitch, Yaw, 'deg');
-                        desiredq = self.model.ikcon(desiredTr, initialq);
-                    self.model.animate(desiredq);
-                    drawnow();
-                end
-            pause(0.5);
-    end
-
 
         %% Trapezoidal Velocity Profile - Initial and Final Joint State
         function qMatrix = TVP_q(self, Steps, Finalq)

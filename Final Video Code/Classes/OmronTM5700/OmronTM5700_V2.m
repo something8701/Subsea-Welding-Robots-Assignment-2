@@ -1,5 +1,8 @@
 classdef OmronTM5700_V2 < RobotBaseClass
-    %% OmronTM5700
+    %% OmronTM5700 robot class
+    % This class creates an Omron TM5 700 robot arm with a suction cup end 
+    % effector. Constructor creates the robot arm at a given base
+    % transform. 
     properties(Access = public)              
         plyFileNameStem = 'OmronTM5700';
         % steelPlate = SteelPlate(1, -0.35, 0, 0.5);
@@ -8,6 +11,7 @@ classdef OmronTM5700_V2 < RobotBaseClass
     
     methods
 %% Define robot Function 
+        % Class constructor
         function self = OmronTM5700_V2(baseTr)
 			% Initialize the robot model
             self.CreateModel();
@@ -24,6 +28,8 @@ classdef OmronTM5700_V2 < RobotBaseClass
         end
 
 %% Create the robot model
+% Creates omron robot model - Defines DH Parameters based on online
+% datasheet. Qlims are defined based on visual simulation testing. 
         function CreateModel(self)
 
             L1 = Link('d', 0.1452, 'a', 0, 'alpha', -pi/2);
@@ -53,7 +59,7 @@ classdef OmronTM5700_V2 < RobotBaseClass
             
             self.model = SerialLink([L1 L2 L3 L4 L5 L6 L7], 'name', 'Omron TM5');
         end
-    %%  Teach function
+    %%  Teach function - For testing of Omron
         function OmronTeach(self, q)
             if nargin < 2
                     q = [0 0 0 0 0 0 0];
@@ -61,144 +67,13 @@ classdef OmronTM5700_V2 < RobotBaseClass
             self.model.teach(q);
         end
 
-    %%  Fkine function
+    %%  Fkine function - Runs fkine to generate end effector pose for given joint state for Omron TM5 700
         function OmronPose = OmronFkine(self,q)
             if nargin < 2
                     q = [0 0 0 0 0 0 0];
             end
             OmronPose = self.model.fkine(q); 
         end
-    %% Move Omron function - With Steel Plate attached - Using Final Q input
-        function OmronAndSteel_MoveToq(self,Finalq)
-            % In case no argument is given
-                if nargin < 2
-                    Finalq = [0 0 0 0 0 0 0];    % Default state
-                end
-            % Initialise Step Count
-                Steps = 50;
-            % Calculate using Trapezoidal Velocity Profile
-                qMatrix = self.TVP_q(Steps, Finalq);
-            % Animate movement to pickup zone
-            for i = 2:6:Steps
-                self.model.animate(qMatrix(i,:));
-                % run fkine once and store
-                    % EndEffectorTr = self.model.fkine([qMatrix(i,:)]);
-                    %EndEffectorTr = EndEffectorTr.T;
-                % Move steel to end effector pose
-                    % Place the steel plate at its final position by updating the base transformation
-                        % self.steelPlate.moveSteelPlate(EndEffectorTr);
-                drawnow();
-                % Slow it down for testing
-                    % pause(0.1);
-            end
-            pause(0.5);
-        end
-    %% Move Omron function - Facing wall
-        function Omron_MoveToCartesian(self,Final_Cart,Roll,Pitch,Yaw)
-                % Ensure values are provided
-                if nargin < 2
-                    Final_Cart = [0, 0, 0];    % Default state
-                end
-                if nargin < 3
-                    Roll = 0;
-                end
-                if nargin < 4
-                    Pitch = 0;
-                end
-                if nargin < 5
-                    Yaw = 0;
-                end
-            % Initialise Step Count
-                Steps = 50;
-            % Calculate the straight-line path in Cartesian space
-                CartesianMatrix = self.TVP_Cartesian_Robot(Steps, 3, Final_Cart); 
-            % Display movement to final position
-                for i = 2:6:Steps
-                    % Get initial pose
-                        initialq = self.model.getpos;
-                    % Get the joint angles corresponding to the current Cartesian position
-                        desiredTr = transl(CartesianMatrix(i, :)) * rpy2tr(Roll, Pitch, Yaw, 'deg');
-                        desiredq = self.model.ikcon(desiredTr, initialq);
-                    self.model.animate(desiredq);
-                    drawnow();
-                    % Slow it down for testing
-                        % pause(0.1);
-                end
-        end
-    %% Move Omron and steel plate move - based on cartesian input (downward orientation)
-        function OmronAndSteel_MoveToCartesian(self,Final_Cart,Roll,Pitch,Yaw)
-            % Ensure values are provided
-                if nargin < 2
-                    Final_Cart = [0, 0, 0];    % Default state
-                end
-                if nargin < 3
-                    Roll = 0;
-                end
-                if nargin < 4
-                    Pitch = 0;
-                end
-                if nargin < 5
-                    Yaw = 0;
-                end
-           % Initialise Step Count
-                Steps = 50;
-           % Calculate the straight-line path in Cartesian space
-                CartesianMatrix = self.TVP_Cartesian_Robot(Steps, 3, Final_Cart); 
-                % % Calculate intermediate points for Roll, Pitch and Yaw
-                %     initialTr = initialTr.T;
-                %     rotationMatrix = initialTr(1:3,1:3);
-                %         initRoll = atan2(rotationMatrix(3,2),rotationMatrix(3,3));
-                %         initPitch = asin(-rotationMatrix(3,1));
-                %         initYaw = atan2(rotationMatrix(2,1),rotationMatrix(1,1));
-                %         initialRot = [initRoll, initPitch, initYaw];
-                %     for i = 1:steps
-                %         rotationPoint = (1 - s(i)) * initialRot + s(i) * [Roll, Pitch, Yaw];
-                %         rotationPath(i, :) = rotationPoint;
-                %     end
-            % Display movement to final position
-                for i = 2:6:Steps
-                    % Get initial pose
-                        initialq = self.model.getpos;
-                    % Get the joint angles corresponding to the current Cartesian position
-                        desiredTr = transl(CartesianMatrix(i, :)) * rpy2tr(Roll, Pitch, Yaw, 'deg');
-                        % desiredTr = desiredTr.T;
-                        desiredq = self.model.ikcon(desiredTr, initialq);
-                    self.model.animate(desiredq);
-                    % run fkine once and store
-                        % EndEffectorTr = self.model.fkine(desiredq);
-                        %EndEffectorTr = EndEffectorTr.T;
-                    % Move steel to end effector pose
-                        % Place the steel plate at its final position by updating the base transformation
-                            % self.steelPlate.moveSteelPlate(EndEffectorTr);
-                    drawnow();
-                    % Slow it down for testing
-                        % pause(0.1);
-                end
-        end
-    %% Move Omron function - Move Omron Base
-        function OmronMoveBase(self,Steps, Final_Cart)
-                % 
-                if nargin < 2
-                    Final_Cart = [0, 0, 0];    % Default base
-                end
-                % Get initial pose
-                    initialq = self.model.getpos;
-                % Calculate the straight-line path in Cartesian space
-                    CartesianMatrix = self.TVP_Cartesian_Base(Steps, 3, Final_Cart); 
-                % Animate movement to pickup zone
-                for i = 2:6:Steps
-                    % set new base
-                        self.model.base = transl(CartesianMatrix(i, :));
-                    % plot
-                        self.model.animate(initialq);
-                    drawnow();
-                    % Slow it down for testing
-                        % pause(0.1);
-                end
-                pause(0.5);
-        end
-
-
 
         %% Trapezoidal Velocity Profile - Initial and Final Joint State
         function qMatrix = TVP_q(self, Steps, Finalq)

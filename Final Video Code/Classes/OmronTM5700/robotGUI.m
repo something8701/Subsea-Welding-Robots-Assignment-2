@@ -21,8 +21,8 @@ classdef robotGUI < handle
             % Initialize robots (comment out SteelPlate if it's non-essential)
             oBaseTr = transl(0,0,0.5);      
             wBaseTr = transl(0.3,0,0.5);
-            app.robotOmron = OmronTM5700(oBaseTr,2);  
-            app.robotWelder = WelderRobot(wBaseTr);   
+            app.robotOmron = OmronTM5700_V2(oBaseTr);  
+            app.robotWelder = WelderRobot_V2(wBaseTr);   
             app.qOmron = zeros(1, app.robotOmron.model.n); 
             app.qWelder = zeros(1, app.robotWelder.model.n);
 

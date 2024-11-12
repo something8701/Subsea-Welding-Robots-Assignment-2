@@ -75,7 +75,7 @@
         % Change View
             xlim([-1.5, 1.5]);
             ylim([-1.5, 1.5]);
-            zlim([0.5, 1.5]);
+            zlim([0, 2]);
         pause(1);
         % Welder robot moves out of the way AND omron moves to pickup steel plate
             movement.OmronAndWelder_MoveToq(50,[pi/2 0 0 0 0 (pi/2) 0],[-pi/2 pi/4 pi/4 0 pi/2 0 0]);
